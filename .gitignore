@@ -1,0 +1,12 @@
+# Python cache
+__pycache__/
+
+# GitHub token for development
+/.gh_token
+
+# Test & debug files
+*.test.*
+*.debug.*
+
+# Output files
+/bar*.svg

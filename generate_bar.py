@@ -42,7 +42,7 @@ def get_my_languages(exclude: Optional[set] = None) -> dict[str, Lang]:
     #     json.dump(repositories, file, ensure_ascii=False, indent=4)
 
     print("Fetching languages...")
-    for i, repository in enumerate(repositories[:1]):  # TODO DEBUG
+    for i, repository in enumerate(repositories):  # TODO DEBUG
         for lang_name, bbytes in GITHUB.get_repo_languages(repository["full_name"]).items():
             if not exclude or tagify(lang_name) not in exclude:
                 lang_obj = languages.get(tagify(lang_name), Lang(tagify(lang_name), lang_name, bbytes))
@@ -50,6 +50,7 @@ def get_my_languages(exclude: Optional[set] = None) -> dict[str, Lang]:
                 languages[lang_obj.tag] = lang_obj
         if i % 10 == 9:
             print(f"{i + 1}/{len(repositories)}")
+    print(f"{len(repositories)}/{len(repositories)}")
 
     # with open("lang_dump.json", 'w', encoding="utf-8") as file:
     #     json.dump(languages, file, ensure_ascii=False, indent=4, cls=DataclassJSONEncoder)
@@ -58,6 +59,9 @@ def get_my_languages(exclude: Optional[set] = None) -> dict[str, Lang]:
 
 
 def process_readme(readme_path: str = "README.md") -> None:
+    if not os.path.isfile(readme_path):
+        exit(f"{readme_path}: file not found")
+
     with open(readme_path, encoding="utf-8") as file:
         readme_data = file.read()
 
@@ -98,14 +102,15 @@ def process_readme(readme_path: str = "README.md") -> None:
 
         # Generate SVG
         svg_bar = generate_bar(languages, total_bytes)
-        with open("bar.svg", 'w', encoding="utf-8") as file:
+        with open("output/bar.svg", 'w', encoding="utf-8") as file:
             file.write(svg_bar)
-        with open("bar.readable.svg", 'w', encoding="utf-8") as file:
+        with open("output/bar.readable.svg", 'w', encoding="utf-8") as file:
             file.write(beautify(svg_bar))
-
-    # with open(readme_path, 'w', encoding="utf-8") as file:
-    #     file.write(readme_data)
 
 
 if __name__ == "__main__":
-    process_readme()
+    if len(sys.argv) > 1:
+        for readme_path in sys.argv[1:]:
+            process_readme(readme_path)
+    else:
+        process_readme()

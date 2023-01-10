@@ -1,0 +1,55 @@
+name: GitHub Language Bar
+
+description: Creates GitHub Language Bar
+
+inputs:
+  gh_token:
+    description: 'Repo-scoped Personal Access Token'
+    required: true
+  readme_path:
+    description: 'Path to README to handle'
+    required: false
+    default: README.md
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout current repository
+      uses: actions/checkout@v3
+      with:
+        path: base_repo
+
+    - name: Checkout Language Bar repository
+      uses: actions/checkout@v3
+      with:
+        repository: npanuhin/GitHub-Language-Bar
+        path: language_bar_repo
+
+    - name: Install Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+        cache: pip
+
+    - name: Install Python modules
+      run: pip install -r language_bar_repo/requirements.txt
+      shell: bash
+
+    - name: Create GitHub Language Bar
+      run: cd language_bar_repo && python generate_bar.py ../base_repo/${{ inputs.readme_path }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.gh_token }}
+
+    - name: Store generated files
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ inputs.gh_token }}
+        publish_branch: language-bar
+        publish_dir: language_bar_repo/output
+        exclude_assets: .gitkeep
+        force_orphan: true
+        disable_nojekyll: true
+        user_name: GitHub Actions
+        user_email: github-actions[bot]@users.noreply.github.com
+        full_commit_message: Updated Language Bar

@@ -17,7 +17,7 @@ NAME_COLOR = "rgb(139, 148, 158)"
 GITHUB_BACKGROUND_COLOR = "rgb(13, 17, 23)"
 
 FONT_SIZE = 12
-FONT_SIZEREF_FILE = "segoeui.ttf"
+FONT_SIZEREF_FILE = "src/segoeui.ttf"
 NAME_WIDTH_THRESHOLD = 0.7
 NAME_Y_OFFSET = 14
 OTHER_LANGS_NAME = "Other"
@@ -38,21 +38,6 @@ def generate_bar(languages: list[Lang], total_bytes: int):
         width=SVG_WIDTH, height=SVG_HEIGHT,
         # style=f"background-color:{GITHUB_BACKGROUND_COLOR}"
     ):
-        with tag("defs"):
-            strip_size = 5
-            strip_color = NAME_COLOR
-            with tag("pattern", id="stripes", width=strip_size, height=strip_size, patternUnits="userSpaceOnUse"):
-                doc.stag(
-                    "polygon",
-                    points=f"{strip_size * 0.75},0 {strip_size},0 {strip_size},{strip_size * 0.25}",
-                    fill=strip_color
-                )
-                doc.stag(
-                    "polygon",
-                    points=f"0,0 {strip_size},{strip_size} {strip_size * 0.75},{strip_size} 0,{strip_size * 0.25}",
-                    fill=strip_color
-                )
-
         with tag("style"), open("src/svg_styles.css", encoding="utf-8") as file:
             text(file.read().strip())
 
@@ -121,6 +106,22 @@ def generate_bar(languages: list[Lang], total_bytes: int):
                     with tag("text", x=x, fill=NAME_COLOR):
                         text(OTHER_LANGS_NAME)
 
+        if show_other_bar:
+            with tag("defs"):
+                strip_size = 5
+                strip_color = NAME_COLOR
+                with tag("pattern", id="stripes", width=strip_size, height=strip_size, patternUnits="userSpaceOnUse"):
+                    doc.stag(
+                        "polygon",
+                        points=f"{strip_size * 0.75},0 {strip_size},0 {strip_size},{strip_size * 0.25}",
+                        fill=strip_color
+                    )
+                    doc.stag(
+                        "polygon",
+                        points=f"0,0 {strip_size},{strip_size} {strip_size * 0.75},{strip_size} 0,{strip_size * 0.25}",
+                        fill=strip_color
+                    )
+
     return doc.getvalue()
 
 
@@ -133,7 +134,7 @@ if __name__ == "__main__":  # Development & manual testing
     os.chdir("../")
 
     import json
-    with open("github_colors_dump.test.json", 'w', encoding="utf-8") as file:
+    with open("output/github_colors_dump.test.json", 'w', encoding="utf-8") as file:
         json.dump(GITHUB_COLORS, file, ensure_ascii=False, indent=4)
 
     languages = [
@@ -144,7 +145,7 @@ if __name__ == "__main__":  # Development & manual testing
     total_bytes = sum(lang.bbytes for lang in languages)
 
     print(bar := beautify(generate_bar(languages, total_bytes)))
-    with open("bar.test.svg", 'w', encoding="utf-8") as file:
+    with open("output/bar.test.svg", 'w', encoding="utf-8") as file:
         file.write(bar)
 
     # print(get_text_size("Python", 12, "segoeui.ttf"))

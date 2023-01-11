@@ -92,11 +92,13 @@ pip install -U pre-commit
 pre-commit install --config ".github/.pre-commit-config.yaml"
 ```
 
+#### Access token
+Generate and place your PAT in `/.gh_token` file
+
 #### TODO List
 - Convert `Jupyter Notebook` to `Python` with some coefficient (like 0.1), or maybe even parse it
 - Hide unwanted languages option
 - **Different styles for dark and light mode**
 
-------------------------------------------------------------------------------------------------------------------------
 
-[^1] This is needed for the script to be able to include you private repository stats
+[^1]: This is needed for the script to be able to include you private repository stats

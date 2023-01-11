@@ -9,6 +9,8 @@ TODO
 <!-- - Hosted on github actions. No 3rd party servers (like Heroku) required. Is GitHub working?<sup>\[?\]</sup> Yes? Than ...
 - Includes private repositories (because you can specify GITHUB_TOKEN)*
 
+But is does not spam you with commits! Only one commit on a separate branch you will never have to worry about
+
 It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/github-readme-stats#language-card-exclusive-options), in whitch I didn't find all of the listed fetures -->
 
 ## Wanna add one to you profile?
@@ -43,7 +45,7 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
     </details>
 
 
-2. Create a workflow file named `language_bar.yaml` in your repository under `.github/workflows` folder and paste the following content inside:
+2. Create a workflow file named `language_bar.yml` in your repository under `.github/workflows` folder and paste the following content inside:
     ```YAML
     name: GitHub Language Bar
 
@@ -51,7 +53,7 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
       push:
         paths:
           - '/README.md'
-          - '/.github/workflows/language_bar.yaml'
+          - '/.github/workflows/language_bar.yml'
       workflow_dispatch:
 
     jobs:

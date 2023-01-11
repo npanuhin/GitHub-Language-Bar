@@ -53,3 +53,16 @@ runs:
         user_name: GitHub Actions
         user_email: github-actions[bot]@users.noreply.github.com
         full_commit_message: Updated Language Bar
+
+    # - name: Clear output (generated) files
+    #   run: find language_bar_repo/output -type f -not -name '.*' -delete
+    #   shell: bash
+
+    - name: Push changes made by script
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        repository: base_repo
+        commit_message: 'Language Bar Update'
+        commit_user_name: GitHub Actions
+        commit_user_email: github-actions[bot]@users.noreply.github.com
+        commit_author: GitHub Actions <github-actions[bot]@users.noreply.github.com>

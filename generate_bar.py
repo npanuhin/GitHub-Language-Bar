@@ -1,7 +1,6 @@
 # from collections import defaultdict
 from urllib.parse import parse_qsl
 from itertools import chain
-from typing import Optional
 from copy import deepcopy
 import sys
 import os
@@ -33,7 +32,7 @@ def tagify(string: str) -> str:
     return string.strip().lower().replace(' ', '_')
 
 
-def get_my_languages(exclude: Optional[set] = None) -> dict[str, Lang]:
+def get_my_languages(exclude: set | None = None) -> dict[str, Lang]:
     languages = {}
 
     print("Fetching repositories...")

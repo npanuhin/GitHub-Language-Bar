@@ -15,7 +15,7 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
 
 ## Wanna add one to you profile?
 
-> It's just three easy steps!
+> It's just three easy steps!  TODO That will take you 5 min
 
 1. Generate a new **repo**-scoped personal access token and add it to your repository[^1]:
     - Go to https://github.com/settings/tokens/new
@@ -101,6 +101,8 @@ Generate and place your PAT in `/.gh_token` file
 - Convert `Jupyter Notebook` to `Python` with some coefficient (like 0.1), or maybe even parse it
 - Hide unwanted languages option
 - **Different styles for dark and light mode**
+- Fetch only needed repositories
+- Maybe exclude certain languages from the repositories individually (`exclude=repo.language`)?
 
 
 [^1]: This is needed for the script to be able to include you private repository stats

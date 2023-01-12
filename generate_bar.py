@@ -1,15 +1,13 @@
-# from collections import defaultdict
 from urllib.parse import parse_qsl
-from itertools import chain
 from copy import deepcopy
 import sys
 import os
 import re
 
 sys.path.append("src")
-from src.utils import Lang, Place            # noqa
-from src.github import GitHub                # noqa
-from src.svg import generate_bar, beautify   # noqa
+from src.utils import Lang, Place                           # noqa
+from src.github import GitHub                               # noqa
+from src.svg import generate_bar, beautify as svg_beautify  # noqa
 
 
 GH_TOKEN = os.environ.get("GH_TOKEN")
@@ -18,6 +16,8 @@ if GH_TOKEN is None:
         GH_TOKEN = file.read().strip()
 
 GITHUB = GitHub(GH_TOKEN)
+
+PUBLISH_BRANCH = "language-bar"
 
 
 ANCHOR_REGEX = re.compile(r"^(.+?)? ?(<!--\s+Langbar(\?.*)?\s+-->)$", re.MULTILINE | re.IGNORECASE)
@@ -32,21 +32,21 @@ def tagify(string: str) -> str:
     return string.strip().lower().replace(' ', '_')
 
 
-def get_my_languages(exclude: set | None = None) -> dict[str, Lang]:
+def get_my_languages() -> dict[str, Lang]:
     languages = {}
 
     print("Fetching repositories...")
     repositories = list(GITHUB.get_my_repos())
+    print(f"Found {len(repositories)} repositories")
     # with open("data.json", 'w', encoding="utf-8") as file:
     #     json.dump(repositories, file, ensure_ascii=False, indent=4)
 
     print("Fetching languages...")
-    for i, repository in enumerate(repositories):  # TODO DEBUG
+    for i, repository in enumerate(repositories):
         for lang_name, bbytes in GITHUB.get_repo_languages(repository["full_name"]).items():
-            if not exclude or tagify(lang_name) not in exclude:
-                lang_obj = languages.get(tagify(lang_name), Lang(tagify(lang_name), lang_name, bbytes))
-                lang_obj.bbytes += bbytes
-                languages[lang_obj.tag] = lang_obj
+            lang_obj = languages.get(tagify(lang_name), Lang(tagify(lang_name), lang_name, bbytes))
+            lang_obj.bbytes += bbytes
+            languages[lang_obj.tag] = lang_obj
         if i % 10 == 9:
             print(f"{i + 1}/{len(repositories)}")
     print(f"{len(repositories)}/{len(repositories)}")
@@ -57,7 +57,7 @@ def get_my_languages(exclude: set | None = None) -> dict[str, Lang]:
     return languages
 
 
-def process_readme(readme_path: str = "README.md") -> None:
+def process_readme(readme_path: str = "README.md", repo_name: str = "example/example") -> None:
     if not os.path.isfile(readme_path):
         exit(f"{readme_path}: file not found")
 
@@ -76,20 +76,32 @@ def process_readme(readme_path: str = "README.md") -> None:
             if key == "exclude":
                 exclude_langs.update(map(tagify, value.split(',')))
             elif key == "replace":
-                replace_langs.update([map(tagify, value.split(',')[:2])])
+                replace_from, replace_to = map(tagify, value.split(',')[:2])
+                replace_langs[replace_from] = replace_to
 
-        places.append(Place(match.start(), match.span(1)[1], match.span(2)[1], exclude_langs, replace_langs))
+        places.append(Place(
+            anchor=match.span(2)[0],
+            image_begin=match.start() if match.span(1)[0] == -1 else match.span(1)[0],
+            image_end=match.start() if match.span(1)[1] == -1 else match.span(1)[1],
+            exclude=exclude_langs,
+            replace=replace_langs
+        ))
 
-    all_languages = get_my_languages(exclude=set(chain.from_iterable(place.exclude for place in places)))
+    all_languages = get_my_languages()
 
     print()
     for place in places:
-        print(f"Handling anchor in {place.anchor_begin}:")
+        print(f"Handling anchor in {place.anchor}:")
+        print(place)
         languages = deepcopy(all_languages)
         # print(languages)
+
         for replace_from, replace_to in place.replace.items():
             if replace_from in languages and replace_to in languages:
                 languages[replace_to].bbytes += languages.pop(replace_from).bbytes
+
+        for exclude_lang in place.exclude:
+            del languages[exclude_lang]
 
         languages = list(languages.values())
 
@@ -104,12 +116,22 @@ def process_readme(readme_path: str = "README.md") -> None:
         with open("output/bar.svg", 'w', encoding="utf-8") as file:
             file.write(svg_bar)
         with open("output/bar.readable.svg", 'w', encoding="utf-8") as file:
-            file.write(beautify(svg_bar))
+            file.write(svg_beautify(svg_bar))
+
+        result_url = f"https://raw.githubusercontent.com/{repo_name}/language-bar/bar.svg"
+
+        print(f"Result image: {result_url}")
+
+        md_image = f"![]({result_url})"
+        readme_data = readme_data[:place.image_begin] + md_image + readme_data[place.image_end:]
+
+    with open(readme_path, 'w', encoding="utf-8") as file:
+        file.write(readme_data)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        for readme_path in sys.argv[1:]:
-            process_readme(readme_path)
+    if len(sys.argv) > 2:
+        process_readme(*sys.argv[1:3])
     else:
-        process_readme()
+        print("--- Not enough arguments passed, running debug/dev mode ---\n")
+        process_readme("../npanuhin/README.md", "npanuhin/npanuhin")

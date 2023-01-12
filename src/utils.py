@@ -1,5 +1,5 @@
-from dataclasses import dataclass, is_dataclass
-import json
+from dataclasses import dataclass  # , is_dataclass
+# import json
 
 
 @dataclass
@@ -11,9 +11,9 @@ class Lang:
 
 @dataclass
 class Place:
+    anchor: int
     image_begin: int
     image_end: int
-    anchor_begin: int
     exclude: set[str]
     replace: dict[str, str]
 
@@ -26,8 +26,8 @@ class SvgPos:
     height: int
 
 
-class DataclassJSONEncoder(json.JSONEncoder):
-    def default(self, o):
-        if is_dataclass(o):
-            return str(o)
-        return super().default(o)
+# class DataclassJSONEncoder(json.JSONEncoder):
+#     def default(self, o):
+#         if is_dataclass(o):
+#             return str(o)
+#         return super().default(o)

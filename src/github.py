@@ -12,6 +12,11 @@ class GitHub:
             "Authorization": f"Bearer {gh_token}"
         })
 
+    # def get_my_username(self) -> str:
+    #     response = self.session.get("https://api.github.com/user")
+    #     assert response.status_code == 200, f"Can't fetch user info ({response.status_code}):\n{response.text}"
+    #     return response.json()["login"]
+
     def get_my_repos(self) -> Iterable[int]:
         page = 0
         while page is not None:
@@ -20,7 +25,8 @@ class GitHub:
                 "per_page": 100,
                 "page": page
             })
-            assert response.status_code == 200, "Can't fetch user repositories:\n" + response.text
+            assert response.status_code == 200, \
+                f"Can't fetch user repositories ({response.status_code}):\n{response.text}"
 
             if "Link" in response.headers:
                 for item in response.headers["Link"].split(", "):
@@ -39,7 +45,20 @@ class GitHub:
 
     def get_repo_languages(self, repo_full_name: str) -> dict[str, int]:
         response = self.session.get(f"https://api.github.com/repos/{repo_full_name}/languages")
-        assert response.status_code == 200, "Can't fetch repository languages:\n" + response.text
+        assert response.status_code == 200, \
+            f"Can't fetch repository languages ({response.status_code}):\n{response.text}"
         # print(f"Languages for {repo_full_name}:")
         # print(response.json())
         return response.json()
+
+
+if __name__ == "__main__":  # Development & manual testing
+    import os
+    os.chdir("../")
+
+    with open(".gh_token", encoding="utf-8") as file:
+        GH_TOKEN = file.read().strip()
+
+    GITHUB = GitHub(GH_TOKEN)
+
+    print(GITHUB.get_my_username())

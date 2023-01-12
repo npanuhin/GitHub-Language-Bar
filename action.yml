@@ -36,7 +36,8 @@ runs:
       shell: bash
 
     - name: Create GitHub Language Bar
-      run: cd language_bar_repo && python generate_bar.py ../base_repo/${{ inputs.readme_path }}
+      run: |
+        cd language_bar_repo && python generate_bar.py ../base_repo/${{ inputs.readme_path }} ${{ github.repository }}
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.gh_token }}

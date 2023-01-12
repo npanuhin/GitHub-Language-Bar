@@ -18,6 +18,7 @@ if GH_TOKEN is None:
 GITHUB = GitHub(GH_TOKEN)
 
 PUBLISH_BRANCH = "language-bar"
+PROMOTION_URL = "https://github.com/npanuhin/GitHub-Language-Bar"
 
 
 ANCHOR_REGEX = re.compile(r"^(.+?)? ?(<!--\s+Langbar(\?.*)?\s+-->)$", re.MULTILINE | re.IGNORECASE)
@@ -122,7 +123,7 @@ def process_readme(readme_path: str = "README.md", repo_name: str = "example/exa
 
         print(f"Result image: {result_url}")
 
-        md_image = f"![]({result_url})"
+        md_image = f"[![]({result_url})]({PROMOTION_URL})"
         readme_data = readme_data[:place.image_begin] + md_image + readme_data[place.image_end:]
 
     with open(readme_path, 'w', encoding="utf-8") as file:

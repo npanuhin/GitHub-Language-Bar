@@ -9,17 +9,17 @@ GITHUB_COLORS = {
     for name, data in req_get("https://raw.githubusercontent.com/ozh/github-colors/master/colors.json").json().items()
 }
 
-SVG_WIDTH, SVG_HEIGHT = 1000, 30
-BAR_POS = SvgPos(0, 0, 1000, 8)
+SVG_WIDTH, SVG_HEIGHT = 854, 30  # 854 is the width of README picture on github profile page
+BAR_POS = SvgPos(0, 0, SVG_WIDTH, 8)
 ACCURACY = 3  # How many digits to use after the decimal point
 
 NAME_COLOR = "rgb(139, 148, 158)"
 GITHUB_BACKGROUND_COLOR = "rgb(13, 17, 23)"
 
-FONT_SIZE = 12
+FONT_SIZE = 13
 FONT_SIZEREF_FILE = "src/segoeui.ttf"
 NAME_WIDTH_THRESHOLD = 0.7
-NAME_Y_OFFSET = 14
+NAME_Y_OFFSET = 16
 OTHER_LANGS_NAME = "Other"
 
 

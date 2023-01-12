@@ -1,5 +1,6 @@
 from urllib.parse import parse_qsl
 from copy import deepcopy
+# import json
 import sys
 import os
 import re
@@ -39,7 +40,7 @@ def get_my_languages() -> dict[str, Lang]:
     print("Fetching repositories...")
     repositories = list(GITHUB.get_my_repos())
     print(f"Found {len(repositories)} repositories")
-    # with open("data.json", 'w', encoding="utf-8") as file:
+    # with open("output/repos.json", 'w', encoding="utf-8") as file:
     #     json.dump(repositories, file, ensure_ascii=False, indent=4)
 
     print("Fetching languages...")
@@ -123,7 +124,7 @@ def process_readme(readme_path: str = "README.md", repo_name: str = "example/exa
 
         print(f"Result image: {result_url}")
 
-        md_image = f"[![]({result_url})]({PROMOTION_URL})"
+        md_image = f'[<img src="{result_url}" width="100%">]({PROMOTION_URL})'
         readme_data = readme_data[:place.image_begin] + md_image + readme_data[place.image_end:]
 
     with open(readme_path, 'w', encoding="utf-8") as file:

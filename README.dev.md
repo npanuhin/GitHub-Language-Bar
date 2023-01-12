@@ -1,6 +1,6 @@
 <h1 align="center">GitHub Language Bar</h1>
 
-![](https://raw.githubusercontent.com/npanuhin/npanuhin/language-bar/bar.svg)
+<img src="https://raw.githubusercontent.com/npanuhin/npanuhin/language-bar/bar.svg" width="100%">
 
 ## Features
 
@@ -52,8 +52,8 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
     on:
       push:                     # Run every time config or README changes
         paths:
-          - '/README.md'
-          - '/.github/workflows/language_bar.yml'
+          - 'README.md'
+          - '.github/workflows/language_bar.yml'
       schedule:                 # Run every day close to 00:00
         - cron: '50 23 * * *'
       workflow_dispatch:        # Run with a button in the Actions tab

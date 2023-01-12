@@ -23,18 +23,17 @@ NAME_Y_OFFSET = 16
 OTHER_LANGS_NAME = "Other"
 
 
-def get_text_size(text, font_size, font_name):
-    return ImageFont.truetype(font_name, font_size).getbbox(text)[2:]
+def get_text_size(text: str, font_size: int, font_path: str) -> tuple[int, int]:
+    return ImageFont.truetype(font_path, font_size).getbbox(text)[2:]
 
 
-def generate_bar(languages: list[Lang], total_bytes: int):
+def generate_bar(languages: list[Lang], total_bytes: int, margin_top: int = 5) -> str:
     languages = sorted(languages, key=lambda item: -item.bbytes)
 
     doc, tag, text = Doc().tagtext()
     with tag(
         "svg",
         xmlns="http://www.w3.org/2000/svg",
-        viewBox=f"0 0 {SVG_WIDTH} {SVG_HEIGHT}",
         width=SVG_WIDTH, height=SVG_HEIGHT,
         # style=f"background-color:{GITHUB_BACKGROUND_COLOR}"
     ):

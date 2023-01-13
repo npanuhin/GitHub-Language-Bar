@@ -59,8 +59,8 @@ class GitHub:
         response = self.session.get(f"https://api.github.com/repos/{repo_full_name}/languages")
         assert response.status_code == 200, \
             f"Can't fetch repository languages ({response.status_code}):\n{response.text}"
-        # print(f"Languages for {repo_full_name}:")
-        # print(response.json())
+        if self.only_public:
+            print(f"Languages for {repo_full_name}: {response.json()}")
         return response.json()
 
 

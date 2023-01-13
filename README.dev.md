@@ -45,13 +45,13 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
     ```
 3. . . . There is no 3rd step, you are all set! Your bar should appear in a few seconds.<br>
     
-    The next steps are optional, but I suggest [enabling private repositories](#enable-private-repositories) so that people can see your true language use across all of your repositories, not just the public ones.
+    The next steps are optional, but I suggest [enabling private repositories](#enable-private-repositories) so that people can see your true language usage across all of your repositories, not just the public ones.
     
     You can also [customize](#Customize) your new language bar in various ways. If you have any questions, [don't hesitate to ask](https://github.com/npanuhin/GitHub-Language-Bar/issues/new)!
 
 ## Enable private repositories
 
-1. Generate a new **repo**-scoped personal access token and add it to your repository:
+1. Generate a new **repo**-scoped personal access token:
     - Go to https://github.com/settings/tokens/new
     - Name the token as you like, e.g. `Language-Bar-token`
     - Set `Expiration` date to `No Expiration`
@@ -140,6 +140,7 @@ Generate and place your token in `/.gh_token` file (~~or use the `GH_TOKEN` envi
 - Hide unwanted languages option
 - **Different styles for dark and light mode**
 - Maybe exclude certain languages from the repositories individually (`exclude=repo.language`)?
+- Somehow log per-repository language usage for private repositories without showing them ¯\\\_(ツ)\_/¯
 
 
 [^anywhere_in_readme]: Actually, it should be at the beginning of the line

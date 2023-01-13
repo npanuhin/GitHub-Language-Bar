@@ -5,11 +5,14 @@ from requests import Session
 
 
 class GitHub:
-    def __init__(self, gh_token):
+    def __init__(self, gh_token=None, username=None, only_public=False):
+        self.only_public = only_public
+        self.username = username
+        self.gh_token = gh_token
         self.session = Session()
         self.session.headers.update({
-            "Accept": "application/vnd.github+json",
-            "Authorization": f"Bearer {gh_token}"
+            "X-GitHub-Api-Version": "2022-11-28",
+            "Accept": "application/vnd.github+json"
         })
 
     # def get_my_username(self) -> str:
@@ -17,10 +20,17 @@ class GitHub:
     #     assert response.status_code == 200, f"Can't fetch user info ({response.status_code}):\n{response.text}"
     #     return response.json()["login"]
 
-    def get_my_repos(self) -> Iterable[int]:
+    def get_my_repos(self) -> Iterable[dict]:
+        if self.only_public:
+            api_url = f"https://api.github.com/users/{self.username}/repos"
+            self.session.headers.pop("Authorization", None)
+        else:
+            self.session.headers["Authorization"] = f"Bearer {self.gh_token}"
+            api_url = "https://api.github.com/user/repos"
+
         page = 0
         while page is not None:
-            response = self.session.get("https://api.github.com/user/repos", params={
+            response = self.session.get(api_url, params={
                 "affiliation": "owner",
                 "per_page": 100,
                 "page": page
@@ -38,7 +48,9 @@ class GitHub:
             else:
                 page = None
 
-            # with open("headers.debug.json", 'w', encoding="utf-8") as file:
+            # with open("output/repos.json", 'w', encoding="utf-8") as file:
+            #     json.dump(response.json(), file, ensure_ascii=False, indent=4)
+            # with open("output/headers.json", 'w', encoding="utf-8") as file:
             #     json.dump(dict(response.headers), file, ensure_ascii=False, indent=4)
 
             yield from response.json()
@@ -56,9 +68,10 @@ if __name__ == "__main__":  # Development & manual testing
     import os
     os.chdir("../")
 
-    with open(".gh_token", encoding="utf-8") as file:
-        GH_TOKEN = file.read().strip()
+    # with open(".gh_token", encoding="utf-8") as file:
+    #     GH_TOKEN = file.read().strip()
+    # GITHUB = GitHub(GH_TOKEN)
 
-    GITHUB = GitHub(GH_TOKEN)
+    GITHUB = GitHub(username="npanuhin", only_public=True)
 
-    print(GITHUB.get_my_username())
+    print(list(GITHUB.get_my_repos()))

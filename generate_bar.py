@@ -11,12 +11,17 @@ from src.github import GitHub                               # noqa
 from src.svg import generate_bar, beautify as svg_beautify  # noqa
 
 
+ONLY_PUBLIC = False
 GH_TOKEN = os.environ.get("GH_TOKEN")
 if GH_TOKEN is None:
-    with open(".gh_token", encoding="utf-8") as file:
-        GH_TOKEN = file.read().strip()
+    if os.path.isfile(".gh_token"):
+        with open(".gh_token", encoding="utf-8") as file:
+            GH_TOKEN = file.read().strip()
+    else:
+        ONLY_PUBLIC = True
+        print("GitHub API token not specified, running in ONLY_PUBLIC mode")
 
-GITHUB = GitHub(GH_TOKEN)
+GITHUB = GitHub(GH_TOKEN, only_public=ONLY_PUBLIC)
 
 PUBLISH_BRANCH = "language-bar"
 PROMOTION_URL = "https://github.com/npanuhin/GitHub-Language-Bar"
@@ -60,6 +65,7 @@ def get_my_languages() -> dict[str, Lang]:
 
 
 def process_readme(readme_path: str = "README.md", repo_name: str = "example/example") -> None:
+    GITHUB.username = repo_name.split("/")[0]
     if not os.path.isfile(readme_path):
         exit(f"{readme_path}: file not found")
 

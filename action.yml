@@ -5,7 +5,8 @@ description: Creates GitHub Language Bar
 inputs:
   gh_token:
     description: 'Repo-scoped Personal Access Token'
-    required: true
+    required: false
+    default: ${{ github.token }}
   readme_path:
     description: 'Path to README to handle'
     required: false

@@ -76,13 +76,13 @@ def process_readme(readme_path: str = "README.md", repo_name: str = "example/exa
     for match in re.finditer(ANCHOR_REGEX, readme_data):
         query = parse_qsl((match.group(3) or '').lstrip('?'))
 
-        exclude_langs = set()
+        hide_langs = set()
         replace_langs = {}
 
         for key, value in query:
             key = tagify(key)
-            if key == "exclude":
-                exclude_langs.update(map(tagify, value.split(',')))
+            if key == "hide":
+                hide_langs.update(map(tagify, value.split(',')))
             elif key == "replace":
                 replace_from, replace_to = map(tagify, value.split(',')[:2])
                 replace_langs[replace_from] = replace_to
@@ -91,31 +91,30 @@ def process_readme(readme_path: str = "README.md", repo_name: str = "example/exa
             anchor=match.span(2)[0],
             image_begin=match.start() if match.span(1)[0] == -1 else match.span(1)[0],
             image_end=match.start() if match.span(1)[1] == -1 else match.span(1)[1],
-            exclude=exclude_langs,
-            replace=replace_langs
+            hide=hide_langs,
+            replace=replace_langs,
         ))
 
     all_languages = get_my_languages()
 
     print()
     for place in places:
-        print(f"Handling anchor in {place.anchor}:")
-        print(place)
+        print(f"Handling {place}:")
         languages = deepcopy(all_languages)
         # print(languages)
 
+        # Replace
         for replace_from, replace_to in place.replace.items():
             if replace_from in languages and replace_to in languages:
                 languages[replace_to].bbytes += languages.pop(replace_from).bbytes
 
-        for exclude_lang in place.exclude:
-            del languages[exclude_lang]
-
-        languages = list(languages.values())
+        # Hide/exclude
+        languages = [lang for lang in languages.values() if lang.tag not in place.hide]
 
         total_bytes = sum(lang.bbytes for lang in languages)
         for lang in sorted(languages, key=lambda item: -item.bbytes):
-            print(f"{lang.name}: {lang.bbytes}/{total_bytes} = {round(lang.bbytes * 100 / total_bytes, 2)}%")
+            hidden = " [HIDDEN]" if lang.tag in place.hide else ""
+            print(f"{lang.name}: {lang.bbytes}/{total_bytes} = {round(lang.bbytes * 100 / total_bytes, 2)}%{hidden}")
 
         print(f"Total bytes of code: {total_bytes}")
 

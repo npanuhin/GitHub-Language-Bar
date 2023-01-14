@@ -14,7 +14,7 @@ class Place:
     anchor: int
     image_begin: int
     image_end: int
-    exclude: set[str]
+    hide: set[str]
     replace: dict[str, str]
 
 

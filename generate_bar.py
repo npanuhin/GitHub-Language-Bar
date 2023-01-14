@@ -117,7 +117,7 @@ def process_readme(readme_path: str = "README.md", repo_name: str = "example/exa
         for lang in sorted(languages, key=lambda item: -item.bbytes):
             print(f"{lang.name}: {lang.bbytes}/{total_bytes} = {round(lang.bbytes * 100 / total_bytes, 2)}%")
 
-        print(f"Total bytes: {total_bytes}")
+        print(f"Total bytes of code: {total_bytes}")
 
         # Generate SVG
         svg_bar = generate_bar(languages, total_bytes)

@@ -112,6 +112,10 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
     ```
     </details>
 
+> **Warning**<br>
+> If you enable private repositories, the script will collect and log some information about them. Since your profile repository is almost always public, everyone can see your workflow logs. Here is a list of what others might see and learn about your private repositories:
+> - Total bytes of code in your GitHub repositories (including public ones)
+
 ## Customize
 
 TODO

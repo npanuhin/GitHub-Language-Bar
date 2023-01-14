@@ -141,10 +141,11 @@ Generate and place your token in `/.gh_token` file (~~or use the `GH_TOKEN` envi
 
 #### TODO List
 - Convert `Jupyter Notebook` to `Python` with some coefficient (like 0.1), or maybe even parse it
-- Hide unwanted languages option
-- **Different styles for dark and light mode**
+- Hide unwanted languages option (show them as "others")
 - Maybe exclude certain languages from the repositories individually (`exclude=repo.language`)?
 - Somehow log per-repository language usage for private repositories without showing them ¯\\\_(ツ)\_/¯
+- Type `owner`/`all`
+- ~~Different styles for dark and light mode~~ \[*Won't be implemented yet as I don't see the need, gray works well for both light and dark mode*\]
 
 
 [^anywhere_in_readme]: Actually, it should be at the beginning of the line

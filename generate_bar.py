@@ -129,6 +129,15 @@ def process_readme(readme_path: str = "README.md", repo_name: str = "example/exa
         result_url = f"https://raw.githubusercontent.com/{repo_name}/language-bar/bar.svg"
 
         print(f"Result image: {result_url}")
+        # md_image = f'''
+        # <picture>
+        #     <source media="(prefers-color-scheme: dark)" srcset="{result_url}">
+        #     <source media="(prefers-color-scheme: light)" srcset="{result_url}">
+        #     <img src="{result_url}" width="100%">
+        # </picture>
+        # '''
+        # md_image = re.sub(r"^ *|\n *| *$", "", md_image)
+        # md_image = f'<a href="{PROMOTION_URL}">{md_image}</a>'
 
         md_image = f'[<img src="{result_url}" width="100%">]({PROMOTION_URL})'
         readme_data = readme_data[:place.image_begin] + md_image + readme_data[place.image_end:]

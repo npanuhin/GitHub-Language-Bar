@@ -140,7 +140,8 @@ pre-commit install --config ".github/.pre-commit-config.yaml"
 Generate and place your token in `/.gh_token` file (~~or use the `GH_TOKEN` environmental variable~~)
 
 #### TODO List
-- Convert `Jupyter Notebook` to `Python` with some coefficient (like 0.1), or maybe even parse it
+- ~~Convert `Jupyter Notebook` to `Python` with some coefficient (like 0.1), or maybe even parse it~~ \[Can't parse because it's too compicated. 
+We need to retrive file tree (which we can't do if there are too many files or if they are larger than 100 MB). And I don't know, just `master` branch or all existing\]
 - Hide unwanted languages option (show them as "others")
 - Maybe exclude certain languages from the repositories individually (`exclude=repo.language`)?
 - Somehow log per-repository language usage for private repositories without showing them ¯\\\_(ツ)\_/¯

@@ -1,3 +1,4 @@
+from yaml import safe_load as yaml_load
 from requests import get as req_get
 from yattag import Doc, indent
 from utils import Lang, SvgPos
@@ -5,8 +6,10 @@ from PIL import ImageFont
 
 
 GITHUB_COLORS = {
-    name: data["color"]
-    for name, data in req_get("https://raw.githubusercontent.com/ozh/github-colors/master/colors.json").json().items()
+    name: lang_data.get("color")
+    for name, lang_data in yaml_load(
+        req_get("https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml").text
+    ).items()
 }
 
 SVG_WIDTH, SVG_HEIGHT = 846.4, 30  # 846.4 is the width of README picture on github profile page

@@ -115,14 +115,21 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
 > **Warning**<br>
 > If you enable private repositories, the script will collect and log some information about them. Since your profile repository is almost always public, everyone can see your workflow logs. Here is a list of what others might see and learn about your private repositories:
 > - Total bytes of code in your GitHub repositories (including public ones)
+> - TODO in URL
 
 ## Customize
 
-<!-- query with multiple keys params -->
-- hide language
-- exclude repo
-- exclude repo.language
-- replace
+query with multiple keys params (TODO)
+
+#### Affiliation: `affiliation = all/owner` (default: `owner`)
+
+#### Include forks: `include_forks = yes/no` (default: `no`)
+> `YeS`, `1`, `true`, etc. are treated as `yes`, otherwise as `no`
+
+#### hide language (TODO)
+#### exclude repo (TODO)
+#### exclude repo.language (TODO)
+#### replace (TODO)
 
 
 ## Development
@@ -146,7 +153,7 @@ We need to retrive file tree (which we can't do if there are too many files or i
 - [x] Option to hide unwanted languages
 - [x] Maybe exclude certain languages from the repositories individually (`exclude=repo.language`)?
 - [ ] Somehow log per-repository language usage for private repositories without showing them ¯\\\_(ツ)\_/¯
-- [ ] Type `owner`/`all`
+- [ ] Affiliation `owner`/`all`
 - [x] ~~Different styles for dark and light mode~~ \[*Won't be implemented yet as I don't see the need, gray works well for both light and dark mode*\]
 - [ ] Replace `repo.language`
 

@@ -31,10 +31,6 @@ PROMOTION_URL = "https://github.com/npanuhin/GitHub-Language-Bar"
 ANCHOR_REGEX = re.compile(r"^(.+?)? ?(<!--\s+Langbar(\?.*)?\s+-->)$", re.MULTILINE | re.IGNORECASE)
 ANCHOR_REPLACEMENT = "<!-- Langbar{query} -->{langbar}"
 
-# DEFAULT_PARAMS = {
-#     "stop_below": 1  # Don't show less than a certain percentage
-# }
-
 
 def get_my_languages() -> dict[str, dict[str, Lang]]:
     full_data = defaultdict(dict)
@@ -76,29 +72,32 @@ def process_readme(readme_path: str = "README.md", readme_repo_name: str = "exam
     for match in re.finditer(ANCHOR_REGEX, readme_data):
         query = parse_qsl((match.group(3) or '').lstrip('?'))
 
-        hide_langs = set()
-        replace_langs = {}
+        places.append(place := Place(
+            anchor=match.span(2)[0],
+            image_begin=match.start() if match.span(1)[0] == -1 else match.span(1)[0],
+            image_end=match.start() if match.span(1)[1] == -1 else match.span(1)[1]
+        ))
 
         for key, value in query:
             key = key.strip().lower()
             if key == "hide":
                 for item in value.split(','):
                     if ':' in item:
-                        repo, lang = item.split(':')
-                        hide_langs.add((repo, check_lang_exists(lang)))
+                        repo, lang = map(str.strip, item.split(':'))
+                        place.hide.add((repo, check_lang_exists(lang)))
                     else:
-                        hide_langs.add(item)
+                        place.hide.add(item.strip())
             elif key == "replace":
-                replace_from, replace_to = value.split(',')[:2]
-                replace_langs[check_lang_exists(replace_from)] = check_lang_exists(replace_to)
-
-        places.append(Place(
-            anchor=match.span(2)[0],
-            image_begin=match.start() if match.span(1)[0] == -1 else match.span(1)[0],
-            image_end=match.start() if match.span(1)[1] == -1 else match.span(1)[1],
-            hide=hide_langs,
-            replace=replace_langs,
-        ))
+                replace_from, replace_to = map(check_lang_exists, map(str.strip, value.split(',')[:2]))
+                place.replace[replace_from] = replace_to
+            elif key == "include_forks":
+                place.include_forks = (value.strip().lower() in ("yes", "true", "1"))
+            elif key == "affiliation":
+                value = value.strip().lower()
+                assert value in ("all", "owner"), "`affiliation` key only allows these values: `all`/`owner`"
+                place.affiliation = value
+            else:
+                print(f"Undefined key: {key}")
 
     full_data = get_my_languages()
 

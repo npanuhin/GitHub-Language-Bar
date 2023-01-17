@@ -34,7 +34,7 @@ class GitHub:
     #     assert response.status_code == 200, f"Can't fetch user info ({response.status_code}):\n{response.text}"
     #     return response.json()["login"]
 
-    def get_my_repos(self) -> Iterable[dict]:
+    def get_my_repos(self, affiliation: str = "owner") -> Iterable[dict]:
         if self.only_public:
             api_url = f"https://api.github.com/users/{self.username}/repos"
             self.session.headers.pop("Authorization", None)

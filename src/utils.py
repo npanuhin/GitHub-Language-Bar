@@ -9,7 +9,6 @@ from github import LANGUAGE_ALIASES
 class Lang:
     name: str
     bbytes: int
-    repo: str = ""  # TODO: Is needed?
 
 
 @dataclass
@@ -50,7 +49,7 @@ SIZE_NAME = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
 
 
 def print_bytes(size_bytes: int) -> str:
-    if size_bytes == 0:
+    if not size_bytes:
         return "0B"
     i = int(math.floor(math.log(size_bytes, 1024)))
     p = math.pow(1024, i)

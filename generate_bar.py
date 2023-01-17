@@ -31,12 +31,12 @@ PROMOTION_URL = "https://github.com/npanuhin/GitHub-Language-Bar"
 ANCHOR_REGEX = re.compile(r"^(.+?)? ?(<!--\s+Langbar(\?.*)?\s+-->)$", re.MULTILINE | re.IGNORECASE)
 ANCHOR_REPLACEMENT = "<!-- Langbar{query} -->{langbar}"
 
-DEFAULT_PARAMS = {
-    "stop_below": 1  # Don't show less than a certain percentage
-}
+# DEFAULT_PARAMS = {
+#     "stop_below": 1  # Don't show less than a certain percentage
+# }
 
 
-def get_my_languages() -> dict[str, Lang]:
+def get_my_languages() -> dict[str, dict[str, Lang]]:
     full_data = defaultdict(dict)
 
     print("Fetching repositories...")
@@ -52,7 +52,7 @@ def get_my_languages() -> dict[str, Lang]:
         for lang_name, bbytes in GITHUB.get_repo_languages(repo_name).items():
             lang_name = LANGUAGE_ALIASES[lang_name]
             if lang_name not in repo_data:
-                repo_data[lang_name] = Lang(lang_name, 0, repo_name)
+                repo_data[lang_name] = Lang(lang_name, 0)
             repo_data[lang_name].bbytes += bbytes
         if i % 10 == 9:
             print(f"{i + 1}/{len(repositories)}")
@@ -64,8 +64,8 @@ def get_my_languages() -> dict[str, Lang]:
     return full_data
 
 
-def process_readme(readme_path: str = "README.md", repo_name: str = "example/example") -> None:
-    GITHUB.username = repo_name.split("/")[0]
+def process_readme(readme_path: str = "README.md", readme_repo_name: str = "example/example") -> None:
+    GITHUB.username = readme_repo_name.split("/")[0]
     if not os.path.isfile(readme_path):
         exit(f"{readme_path}: file not found")
 
@@ -115,11 +115,11 @@ def process_readme(readme_path: str = "README.md", repo_name: str = "example/exa
         data = deepcopy(full_data)
 
         # Replace
-        for repo_name, repo_data in data.items():
+        for repo_data in data.values():
             for replace_from, replace_to in place.replace.items():
                 if replace_from in repo_data:
                     if replace_to not in repo_data:
-                        repo_data[replace_to] = Lang(replace_to, 0, repo_name)
+                        repo_data[replace_to] = Lang(replace_to, 0)
                     repo_data[replace_to].bbytes += repo_data.pop(replace_from).bbytes
 
         # Hide/exclude
@@ -150,7 +150,7 @@ def process_readme(readme_path: str = "README.md", repo_name: str = "example/exa
         with open("output/bar.readable.svg", 'w', encoding="utf-8") as file:
             file.write(svg_beautify(svg_bar))
 
-        result_url = f"https://raw.githubusercontent.com/{repo_name}/language-bar/bar.svg"
+        result_url = f"https://raw.githubusercontent.com/{readme_repo_name}/language-bar/bar.svg"
 
         print(f"Result image: {result_url}")
         # md_image = f'''

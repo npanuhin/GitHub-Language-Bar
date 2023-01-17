@@ -1,7 +1,21 @@
 from collections.abc import Iterable
 # import json
 
-from requests import Session
+from yaml import safe_load as yaml_load
+from requests import Session, get as req_get
+
+
+linguist_data = req_get("https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml").text
+GITHUB_COLORS = {
+    name: lang_data.get("color")
+    for name, lang_data in yaml_load(linguist_data).items()
+}
+LANGUAGE_ALIASES = {}
+for name, lang_data in yaml_load(linguist_data).items():
+    GITHUB_COLORS[name] = lang_data.get("color")
+    LANGUAGE_ALIASES[name] = name
+    for alias in lang_data.get("aliases", ()):
+        LANGUAGE_ALIASES[alias] = name
 
 
 class GitHub:
@@ -55,12 +69,10 @@ class GitHub:
 
             yield from response.json()
 
-    def get_repo_languages(self, repo_full_name: str) -> dict[str, int]:
-        response = self.session.get(f"https://api.github.com/repos/{repo_full_name}/languages")
+    def get_repo_languages(self, repo_name: str) -> dict[str, int]:
+        response = self.session.get(f"https://api.github.com/repos/{repo_name}/languages")
         assert response.status_code == 200, \
             f"Can't fetch repository languages ({response.status_code}):\n{response.text}"
-        if self.only_public:
-            print(f"Languages for {repo_full_name}: {response.json()}")
         return response.json()
 
 

@@ -1,3 +1,4 @@
+from collections import defaultdict
 from urllib.parse import parse_qsl
 from copy import deepcopy
 # import json
@@ -6,9 +7,9 @@ import os
 import re
 
 sys.path.append("src")
-from src.utils import Lang, Place                           # noqa
-from src.github import GitHub                               # noqa
-from src.svg import generate_bar, beautify as svg_beautify  # noqa
+from src.utils import Lang, Place, DataclassJSONEncoder, check_lang_exists, print_bytes  # noqa
+from src.github import GitHub, LANGUAGE_ALIASES                                          # noqa
+from src.svg import generate_bar, beautify as svg_beautify                               # noqa
 
 
 ONLY_PUBLIC = False
@@ -35,12 +36,8 @@ DEFAULT_PARAMS = {
 }
 
 
-def tagify(string: str) -> str:
-    return string.strip().lower().replace(' ', '_')
-
-
 def get_my_languages() -> dict[str, Lang]:
-    languages = {}
+    full_data = defaultdict(dict)
 
     print("Fetching repositories...")
     repositories = list(GITHUB.get_my_repos())
@@ -50,18 +47,21 @@ def get_my_languages() -> dict[str, Lang]:
 
     print("Fetching languages...")
     for i, repository in enumerate(repositories):
-        for lang_name, bbytes in GITHUB.get_repo_languages(repository["full_name"]).items():
-            lang_obj = languages.get(tagify(lang_name), Lang(tagify(lang_name), lang_name, bbytes))
-            lang_obj.bbytes += bbytes
-            languages[lang_obj.tag] = lang_obj
+        repo_name = repository["full_name"]
+        repo_data = full_data[repo_name]
+        for lang_name, bbytes in GITHUB.get_repo_languages(repo_name).items():
+            lang_name = LANGUAGE_ALIASES[lang_name]
+            if lang_name not in repo_data:
+                repo_data[lang_name] = Lang(lang_name, 0, repo_name)
+            repo_data[lang_name].bbytes += bbytes
         if i % 10 == 9:
             print(f"{i + 1}/{len(repositories)}")
     print(f"{len(repositories)}/{len(repositories)}")
 
-    # with open("lang_dump.json", 'w', encoding="utf-8") as file:
-    #     json.dump(languages, file, ensure_ascii=False, indent=4, cls=DataclassJSONEncoder)
+    # with open("output/repo_data.dump.json", 'w', encoding="utf-8") as file:
+    #     json.dump(full_data, file, ensure_ascii=False, indent=4, cls=DataclassJSONEncoder)
 
-    return languages
+    return full_data
 
 
 def process_readme(readme_path: str = "README.md", repo_name: str = "example/example") -> None:
@@ -80,12 +80,17 @@ def process_readme(readme_path: str = "README.md", repo_name: str = "example/exa
         replace_langs = {}
 
         for key, value in query:
-            key = tagify(key)
+            key = key.strip().lower()
             if key == "hide":
-                hide_langs.update(map(tagify, value.split(',')))
+                for item in value.split(','):
+                    if ':' in item:
+                        repo, lang = item.split(':')
+                        hide_langs.add((repo, check_lang_exists(lang)))
+                    else:
+                        hide_langs.add(item)
             elif key == "replace":
-                replace_from, replace_to = map(tagify, value.split(',')[:2])
-                replace_langs[replace_from] = replace_to
+                replace_from, replace_to = value.split(',')[:2]
+                replace_langs[check_lang_exists(replace_from)] = check_lang_exists(replace_to)
 
         places.append(Place(
             anchor=match.span(2)[0],
@@ -95,28 +100,48 @@ def process_readme(readme_path: str = "README.md", repo_name: str = "example/exa
             replace=replace_langs,
         ))
 
-    all_languages = get_my_languages()
+    full_data = get_my_languages()
 
-    print()
+    if ONLY_PUBLIC:
+        print("\nLanguage info:")
+        for repo_name, repo_data in full_data.items():
+            print(f"Languages for {repo_name}")
+            for lang_name, lang in repo_data.items():
+                border_symbol = '└' if lang_name == next(reversed(repo_data)) else '├'
+                print(f"  {border_symbol} {lang_name}: {lang.bbytes}")
+
     for place in places:
-        print(f"Handling {place}:")
-        languages = deepcopy(all_languages)
-        # print(languages)
+        print(f"\nHandling {place}:")
+        data = deepcopy(full_data)
 
         # Replace
-        for replace_from, replace_to in place.replace.items():
-            if replace_from in languages and replace_to in languages:
-                languages[replace_to].bbytes += languages.pop(replace_from).bbytes
+        for repo_name, repo_data in data.items():
+            for replace_from, replace_to in place.replace.items():
+                if replace_from in repo_data:
+                    if replace_to not in repo_data:
+                        repo_data[replace_to] = Lang(replace_to, 0, repo_name)
+                    repo_data[replace_to].bbytes += repo_data.pop(replace_from).bbytes
 
         # Hide/exclude
-        languages = [lang for lang in languages.values() if lang.tag not in place.hide]
+        for repo_name, repo_data in data.items():
+            for lang_name in list(repo_data.keys()):
+                if (repo_name, lang_name) in place.hide or lang_name in place.hide:
+                    del repo_data[lang_name]
+
+        languages = {}
+        for repo_data in data.values():
+            for lang_name, lang in repo_data.items():
+                if lang_name not in languages:
+                    languages[lang_name] = Lang(lang_name, 0)
+                languages[lang_name].bbytes += lang.bbytes
+        languages = list(languages.values())
 
         total_bytes = sum(lang.bbytes for lang in languages)
-        for lang in sorted(languages, key=lambda item: -item.bbytes):
-            hidden = " [HIDDEN]" if lang.tag in place.hide else ""
-            print(f"{lang.name}: {lang.bbytes}/{total_bytes} = {round(lang.bbytes * 100 / total_bytes, 2)}%{hidden}")
+        print(f"──┤ Total bytes of code: {print_bytes(total_bytes)} ├──")
 
-        print(f"Total bytes of code: {total_bytes}")
+        for lang in sorted(languages, key=lambda item: -item.bbytes):
+            hidden = " [HIDDEN]" if lang.name in place.hide else ""
+            print(f"{lang.name}: {print_bytes(lang.bbytes)} = {round(lang.bbytes * 100 / total_bytes, 2)}%{hidden}")
 
         # Generate SVG
         svg_bar = generate_bar(languages, total_bytes)
@@ -149,5 +174,5 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         process_readme(*sys.argv[1:3])
     else:
-        print("--- Not enough arguments passed, running debug/dev mode ---\n")
+        print("─── Not enough arguments passed, running debug/dev mode ───\n")
         process_readme("../npanuhin/README.md", "npanuhin/npanuhin")

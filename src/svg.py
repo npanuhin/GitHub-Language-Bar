@@ -1,16 +1,9 @@
-from yaml import safe_load as yaml_load
-from requests import get as req_get
 from yattag import Doc, indent
-from utils import Lang, SvgPos
 from PIL import ImageFont
 
+from utils import Lang, SvgPos    # noqa
+from github import GITHUB_COLORS  # noqa
 
-GITHUB_COLORS = {
-    name: lang_data.get("color")
-    for name, lang_data in yaml_load(
-        req_get("https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml").text
-    ).items()
-}
 
 SVG_WIDTH, SVG_HEIGHT = 846.4, 30  # 846.4 is the width of README picture on github profile page
 BAR_POS = SvgPos(0, 0, SVG_WIDTH, 8)
@@ -140,8 +133,8 @@ if __name__ == "__main__":  # Development & manual testing
         json.dump(GITHUB_COLORS, file, ensure_ascii=False, indent=4)
 
     languages = [
-        Lang(tag='python', name='Python', bbytes=141512),
-        Lang(tag='c++', name='C++', bbytes=7860)
+        Lang(name='Python', bbytes=141512),
+        Lang(name='C++', bbytes=7860)
     ]
     # total_bytes = 300000
     total_bytes = sum(lang.bbytes for lang in languages)

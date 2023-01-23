@@ -1,4 +1,3 @@
-# from collections import defaultdict
 from urllib.parse import parse_qsl
 from copy import deepcopy
 # import json
@@ -53,6 +52,7 @@ def get_my_languages() -> list[Repo]:
         repos.append(Repo(
             name=repo_name,
             fork=repository["fork"],
+            collaborative=(repository["owner"]["login"] != GITHUB.username),
             languages=languages
         ))
         if i % 10 == 9:
@@ -96,10 +96,8 @@ def process_readme(readme_path: str = "README.md", readme_repo_name: str = "exam
                 place.replace[replace_from] = replace_to
             elif key == "include_forks":
                 place.include_forks = (value.strip().lower() in ("yes", "true", "1"))
-            elif key == "affiliation":
-                value = value.strip().lower()
-                assert value in ("all", "owner"), "`affiliation` key only allows these values: `all`/`owner`"
-                place.affiliation = value
+            elif key == "include_collaborative":
+                place.include_collaborative = (value.strip().lower() in ("yes", "true", "1"))
             else:
                 print(f"Undefined key: {key}")
 
@@ -120,6 +118,10 @@ def process_readme(readme_path: str = "README.md", readme_repo_name: str = "exam
         # Include forks
         if not place.include_forks:
             repos = [repo for repo in repos if not repo.fork]
+
+        # Include collaborative
+        if not place.include_collaborative:
+            repos = [repo for repo in repos if not repo.collaborative]
 
         # Replace
         for repo in repos:

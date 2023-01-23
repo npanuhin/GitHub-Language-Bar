@@ -44,9 +44,9 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
     <!-- Langbar -->
     ```
 3. . . . There is no 3rd step, you are all set! Your bar should appear in a few seconds.<br>
-    
+
     The next steps are optional, but I suggest [enabling private repositories](#enable-private-repositories) so that people can see your true language usage across all of your repositories, not just the public ones.
-    
+
     You can also [customize](#Customize) your new language bar in various ways. If you have any questions, [don't hesitate to ask](https://github.com/npanuhin/GitHub-Language-Bar/issues/new)!
 
 ## Enable private repositories
@@ -121,9 +121,10 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
 
 query with multiple keys params (TODO)
 
-#### Affiliation: `affiliation = all/owner` (default: `owner`)
-
 #### Include forks: `include_forks = yes/no` (default: `no`)
+> `YeS`, `1`, `true`, etc. are treated as `yes`, otherwise as `no`
+
+#### Include collaborative repositories: `include_collaborative = yes/no` (default/recommended: `no`)
 > `YeS`, `1`, `true`, etc. are treated as `yes`, otherwise as `no`
 
 #### hide language (TODO)

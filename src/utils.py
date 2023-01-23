@@ -1,13 +1,12 @@
 from dataclasses import dataclass, is_dataclass, field
-from typing import Literal
 import math
 import json
 
 from github import LANGUAGE_ALIASES
 
 DEFAULT_PARAMS = {
-    "affiliation": "owner",
-    "include_forks": True,
+    "include_forks": False,
+    "include_collaborative": False,
     "stop_below": 1  # Don't show less than a certain percentage
 }
 
@@ -22,6 +21,7 @@ class Lang:
 class Repo:
     name: str
     fork: bool
+    collaborative: bool
     languages: dict[str, Lang]
 
 
@@ -32,8 +32,8 @@ class Place:
     image_end: int
     hide: set[str] = field(default_factory=set)
     replace: dict[str, str] = field(default_factory=dict)
-    affiliation: Literal["all", "owner"] = DEFAULT_PARAMS["affiliation"]
     include_forks: bool = DEFAULT_PARAMS["include_forks"]
+    include_collaborative: bool = DEFAULT_PARAMS["include_collaborative"]
 
 
 @dataclass

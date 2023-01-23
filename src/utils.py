@@ -19,6 +19,13 @@ class Lang:
 
 
 @dataclass
+class Repo:
+    name: str
+    fork: bool
+    languages: dict[str, Lang]
+
+
+@dataclass
 class Place:
     anchor: int
     image_begin: int

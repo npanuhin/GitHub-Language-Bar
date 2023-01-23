@@ -1,4 +1,4 @@
-from collections import defaultdict
+# from collections import defaultdict
 from urllib.parse import parse_qsl
 from copy import deepcopy
 # import json
@@ -7,9 +7,9 @@ import os
 import re
 
 sys.path.append("src")
-from src.utils import Lang, Place, DataclassJSONEncoder, check_lang_exists, print_bytes  # noqa
-from src.github import GitHub, LANGUAGE_ALIASES                                          # noqa
-from src.svg import generate_bar, beautify as svg_beautify                               # noqa
+from src.utils import Lang, Repo, Place, DataclassJSONEncoder, check_lang_exists, print_bytes  # noqa
+from src.github import GitHub, LANGUAGE_ALIASES                                                # noqa
+from src.svg import generate_bar, beautify as svg_beautify                                     # noqa
 
 
 ONLY_PUBLIC = False
@@ -32,8 +32,8 @@ ANCHOR_REGEX = re.compile(r"^(.+?)? ?(<!--\s+Langbar(\?.*)?\s+-->)$", re.MULTILI
 ANCHOR_REPLACEMENT = "<!-- Langbar{query} -->{langbar}"
 
 
-def get_my_languages() -> dict[str, dict[str, Lang]]:
-    full_data = defaultdict(dict)
+def get_my_languages() -> list[Repo]:
+    repos = []
 
     print("Fetching repositories...")
     repositories = list(GITHUB.get_my_repos())
@@ -44,20 +44,24 @@ def get_my_languages() -> dict[str, dict[str, Lang]]:
     print("Fetching languages...")
     for i, repository in enumerate(repositories):
         repo_name = repository["full_name"]
-        repo_data = full_data[repo_name]
+        languages = {}
         for lang_name, bbytes in GITHUB.get_repo_languages(repo_name).items():
             lang_name = LANGUAGE_ALIASES[lang_name]
-            if lang_name not in repo_data:
-                repo_data[lang_name] = Lang(lang_name, 0)
-            repo_data[lang_name].bbytes += bbytes
+            if lang_name not in languages:
+                languages[lang_name] = Lang(lang_name, 0)
+            languages[lang_name].bbytes += bbytes
+        repos.append(Repo(
+            name=repo_name,
+            fork=repository["fork"],
+            languages=languages
+        ))
         if i % 10 == 9:
             print(f"{i + 1}/{len(repositories)}")
     print(f"{len(repositories)}/{len(repositories)}")
 
-    # with open("output/repo_data.dump.json", 'w', encoding="utf-8") as file:
-    #     json.dump(full_data, file, ensure_ascii=False, indent=4, cls=DataclassJSONEncoder)
-
-    return full_data
+    # with open("output/repos_data.dump.json", 'w', encoding="utf-8") as file:
+    #     json.dump(repos, file, ensure_ascii=False, indent=4, cls=DataclassJSONEncoder)
+    return repos
 
 
 def process_readme(readme_path: str = "README.md", readme_repo_name: str = "example/example") -> None:
@@ -99,37 +103,41 @@ def process_readme(readme_path: str = "README.md", readme_repo_name: str = "exam
             else:
                 print(f"Undefined key: {key}")
 
-    full_data = get_my_languages()
+    default_repos = get_my_languages()
 
     if ONLY_PUBLIC:
         print("\nLanguage info:")
-        for repo_name, repo_data in full_data.items():
-            print(f"Languages for {repo_name}")
-            for lang_name, lang in repo_data.items():
-                border_symbol = '└' if lang_name == next(reversed(repo_data)) else '├'
+        for repo in default_repos:
+            print(f"Languages for {repo.name}")
+            for lang_name, lang in repo.languages.items():
+                border_symbol = '└' if lang_name == next(reversed(repo.languages)) else '├'
                 print(f"  {border_symbol} {lang_name}: {lang.bbytes}")
 
     for place in places:
         print(f"\nHandling {place}:")
-        data = deepcopy(full_data)
+        repos = deepcopy(default_repos)
+
+        # Include forks
+        if not place.include_forks:
+            repos = [repo for repo in repos if not repo.fork]
 
         # Replace
-        for repo_data in data.values():
+        for repo in repos:
             for replace_from, replace_to in place.replace.items():
-                if replace_from in repo_data:
-                    if replace_to not in repo_data:
-                        repo_data[replace_to] = Lang(replace_to, 0)
-                    repo_data[replace_to].bbytes += repo_data.pop(replace_from).bbytes
+                if replace_from in repo.languages:
+                    if replace_to not in repo.languages:
+                        repo.languages[replace_to] = Lang(replace_to, 0)
+                    repo.languages[replace_to].bbytes += repo.languages.pop(replace_from).bbytes
 
         # Hide/exclude
-        for repo_name, repo_data in data.items():
-            for lang_name in list(repo_data.keys()):
-                if (repo_name, lang_name) in place.hide or lang_name in place.hide:
-                    del repo_data[lang_name]
+        for repo in repos:
+            for lang_name in list(repo.languages.keys()):
+                if (repo.name, lang_name) in place.hide or lang_name in place.hide:
+                    del repo.languages[lang_name]
 
         languages = {}
-        for repo_data in data.values():
-            for lang_name, lang in repo_data.items():
+        for repo in repos:
+            for lang_name, lang in repo.languages.items():
                 if lang_name not in languages:
                     languages[lang_name] = Lang(lang_name, 0)
                 languages[lang_name].bbytes += lang.bbytes

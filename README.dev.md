@@ -79,7 +79,7 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
     </details>
 
 
-3. Add the following parameter to your workflow file `.github/workflows/language_bar.yml`:
+3. <a id="private_enable_lines_anchor"></a>Add the following parameter to your workflow file `.github/workflows/language_bar.yml`:
     ```DIFF
         uses: npanuhin/GitHub-Language-Bar@master
     +   with:               # Token is used to fetch private repositories
@@ -115,48 +115,44 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
 > **Warning**<br>
 > If you enable private repositories, the script will collect and log some information about them. Since your profile repository is almost always public, everyone can see your workflow logs. Here is a list of what others might see and learn about your private repositories:
 > - Total bytes of code in your GitHub repositories (including public ones)
-> - TODO in URL
+> - If you use (TODO in URL)
+
+> **Note**<br>
+> To disable private repositories, just remove [the added lines](#user-content-private_enable_lines_anchor)
 
 ## Customize
 
-query with multiple keys params (TODO)
+Customizing GitHub Language Bar is simple — just add the parameter you want after `?`, as if it was a url: `Langbar?key=param`. Examples are given for each setting
 
-#### Include forks: `include_forks = yes/no` (default: `no`)
-> `YeS`, `1`, `true`, etc. are treated as `yes`, otherwise as `no`
+- **Include forks: `include_forks = yes/no`[^treating_yes_no] (default: `no`)**
 
-#### Include collaborative repositories: `include_collaborative = yes/no` (default/recommended: `no`)
-> `YeS`, `1`, `true`, etc. are treated as `yes`, otherwise as `no`
+  Whether to include [forked](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project) repositories or not<br>Example: `<!-- Langbar?include_forks=yes -->`
 
-#### hide language (TODO)
-#### exclude repo (TODO)
-#### exclude repo.language (TODO)
-#### replace (TODO)
+- **Include collaborative repositories: `include_collaborative = yes/no`[^treating_yes_no] (default/recommended: `no`)**
 
+  [Private mode](#enable-private-repositories) only. Whether to include repositories that you don't own but have access to as a **collaborator**<br>Example: `<!-- Langbar?include_collaborative=yes -->`
 
-## Development
+  > **Note**<br>
+  > Not a **contributor** — **collaborator**! I can not count contributions yet
 
-#### Code linting
-```bash
-pip install -U -r ".github/flake8.requirements.txt"
-flake8 --show-source --statistics
+- **Hide language: `hide=language1,repo2:language2,language3`**
 
-# To install pre-commit hook:
-pip install -U pre-commit
-pre-commit install --config ".github/.pre-commit-config.yaml"
+  Option to hide the desired language in all repositories or only in a specific repository (comma-separated list)<br>
+  Example: `<!-- Langbar?hide=Jupyter Notebook,npanuhin/Fourier:JavaScript -->`
+
+- **Exclude repo (TODO)**
+- **Exclude repo.language (TODO)**
+- **Replace (TODO)**
+
+Example of all settings combined:
+```
+<!-- Langbar?include_forks=yes&include_collaborative=yes&hide=Jupyter Notebook,npanuhin/Fourier:JavaScript -->
 ```
 
-#### Access token
-Generate and place your token in `/.gh_token` file (~~or use the `GH_TOKEN` environmental variable~~)
+### Contributing
 
-#### TODO List
-- [x] ~~Convert `Jupyter Notebook` to `Python` with some coefficient (like 0.1), or maybe even parse it~~ \[Can't parse because it's too compicated. 
-We need to retrive file tree (which we can't do if there are too many files or if they are larger than 100 MB). And I don't know, just `master` branch or all existing\]
-- [x] Option to hide unwanted languages
-- [x] Maybe exclude certain languages from the repositories individually (`exclude=repo.language`)?
-- [ ] Somehow log per-repository language usage for private repositories without showing them ¯\\\_(ツ)\_/¯
-- [ ] Affiliation `owner`/`all`
-- [x] ~~Different styles for dark and light mode~~ \[*Won't be implemented yet as I don't see the need, gray works well for both light and dark mode*\]
-- [ ] Replace `repo.language`
+For technical details and TODO list see [contribution guide](.github/contributing.md).
 
 
-[^anywhere_in_readme]: Actually, it should be at the beginning of the line
+[^anywhere_in_readme]: Actually, it should be on a separate line
+[^treating_yes_no]: `YeS`, `1`, `true`, etc. are treated as `yes`, otherwise as `no`

@@ -21,4 +21,4 @@ We need to retrive file tree (which we can't do if there are too many files or i
 - [ ] Somehow log per-repository language usage for private repositories without showing them ¯\\\_(ツ)\_/¯
 - [x] Affiliation `owner`/`all`
 - [x] ~~Different styles for dark and light mode~~ \[*Won't be implemented yet as I don't see the need, gray works well for both light and dark mode*\]
-- [ ] Replace `repo.language`
+- [x] Replace `repo:language`

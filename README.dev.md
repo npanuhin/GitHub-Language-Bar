@@ -135,23 +135,33 @@ Customizing GitHub Language Bar is simple — just add the parameter you want af
   > **Note**<br>
   > Not a **contributor** — **collaborator**! I can not count contributions yet
 
+- **Replace language: `replace=language1->language1_new,repo2:language2->language2_new`**
+
+  Option to replace the desired language with another language in all repositories or only in a specific repository (comma-separated list).<br>
+  Example: `<!-- Langbar?replace=Hack->PHP,npanuhin/MyRepo:Hack->PHP -->`
+
 - **Hide language: `hide=language1,repo2:language2,language3`**
 
-  Option to hide the desired language in all repositories or only in a specific repository (comma-separated list)<br>
-  Example: `<!-- Langbar?hide=Jupyter Notebook,npanuhin/Fourier:JavaScript -->`
+  Option to hide the desired language in all repositories or only in a specific repository (comma-separated list).<br>
+  <a id="hide_setting_example"></a>Example: `<!-- Langbar?hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript -->`
 
 - **Exclude repo (TODO)**
 - **Exclude repo.language (TODO)**
-- **Replace (TODO)**
 
 Example of all settings combined:
 ```
-<!-- Langbar?include_forks=yes&include_collaborative=yes&hide=Jupyter Notebook,npanuhin/Fourier:JavaScript -->
+<!-- Langbar?include_forks=yes&include_collaborative=yes&hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript -->
 ```
 
-### Contributing
+> **Note**<br>
+> Settings are applied in the order they appear in the list above. For example, `hide` is applied after `replace`.
 
-For technical details and TODO list see [contribution guide](.github/contributing.md).
+**Pro tip**: Individual settings can be used multiple times.<br>
+For example: `<!-- Langbar?hide=Jupyter Notebook&hide=npanuhin/MyRepo:JavaScript -->` is equal to [the previous `hide` example](#hide_setting_example)
+
+## Contributing
+
+For technical details and TODO list see [contribution guide](.github/CONTRIBUTING.md).
 
 
 [^anywhere_in_readme]: Actually, it should be on a separate line

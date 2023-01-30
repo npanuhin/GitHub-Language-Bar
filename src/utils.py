@@ -51,13 +51,20 @@ class DataclassJSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
-def check_lang_exists(lang: str) -> None:
+def check_lang_exists(lang: str) -> str:
     assert lang in LANGUAGE_ALIASES, (
         f'Language "{lang}" not found in linguist library ('
         "https://github.com/github/linguist/blob/master/lib/linguist/languages.yml"
         ")"
     )
     return lang
+
+
+def check_repo_format(repo: str) -> str:
+    assert 0 < repo.find('/') < len(repo) - 1 and repo.count('/') == 1, (
+        r'Repo name should be in format {repo_owner}/{repo_name}, for example: "octocat/hello-worId"'
+    )
+    return repo
 
 
 # Pretty-pring amount of bytes

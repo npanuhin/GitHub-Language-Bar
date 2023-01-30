@@ -6,9 +6,9 @@ import os
 import re
 
 sys.path.append("src")
-from src.utils import Lang, Repo, Place, DataclassJSONEncoder, check_lang_exists, print_bytes  # noqa
-from src.github import GitHub, LANGUAGE_ALIASES                                                # noqa
-from src.svg import generate_bar, beautify as svg_beautify                                     # noqa
+from src.utils import Lang, Repo, Place, DataclassJSONEncoder, check_lang_exists, check_repo_format, print_bytes  # noqa
+from src.github import GitHub, LANGUAGE_ALIASES                                                                   # noqa
+from src.svg import generate_bar, beautify as svg_beautify                                                        # noqa
 
 
 ONLY_PUBLIC = False
@@ -88,12 +88,22 @@ def process_readme(readme_path: str = "README.md", readme_repo_name: str = "exam
                 for item in value.split(','):
                     if ':' in item:
                         repo, lang = map(str.strip, item.split(':'))
-                        place.hide.add((repo, check_lang_exists(lang)))
+                        place.hide.add((check_repo_format(repo), check_lang_exists(lang)))
                     else:
                         place.hide.add(item.strip())
+
             elif key == "replace":
-                replace_from, replace_to = map(check_lang_exists, map(str.strip, value.split(',')[:2]))
-                place.replace[replace_from] = replace_to
+                for item in value.split(','):
+                    assert '->' in item, '"->" not found in replace setting'
+                    replace_from, replace_to = item.split('->')
+                    assert ':' not in replace_to, \
+                        'You cannot replace "repo1:language1" with "repo2:language2", only with "language2"'
+                    if ':' in replace_from:
+                        repo, lang = map(str.strip, replace_from.split(':'))
+                        replace_from = check_repo_format(repo) + ':' + check_lang_exists(lang)
+                    replace_to = check_lang_exists(replace_to.strip())
+                    place.replace[replace_from] = replace_to
+
             elif key == "include_forks":
                 place.include_forks = (value.strip().lower() in ("yes", "true", "1"))
             elif key == "include_collaborative":
@@ -126,12 +136,17 @@ def process_readme(readme_path: str = "README.md", readme_repo_name: str = "exam
         # Replace
         for repo in repos:
             for replace_from, replace_to in place.replace.items():
+                if ':' in replace_from:
+                    replace_from_repo, replace_from = replace_from.split(':')
+                    if repo.name != replace_from_repo:
+                        continue
+
                 if replace_from in repo.languages:
                     if replace_to not in repo.languages:
                         repo.languages[replace_to] = Lang(replace_to, 0)
                     repo.languages[replace_to].bbytes += repo.languages.pop(replace_from).bbytes
 
-        # Hide/exclude
+        # Hide
         for repo in repos:
             for lang_name in list(repo.languages.keys()):
                 if (repo.name, lang_name) in place.hide or lang_name in place.hide:

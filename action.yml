@@ -6,11 +6,15 @@ inputs:
   gh_token:
     description: 'Repo-scoped Personal Access Token'
     required: false
-    default: ${{ github.token }}
+    default: ''
   readme_path:
     description: 'Path to README to handle'
     required: false
     default: README.md
+  log:
+    description: 'Whether to log language usage (private repo warning!)'
+    required: false
+    default: false
 
 runs:
   using: composite
@@ -37,8 +41,10 @@ runs:
       shell: bash
 
     - name: Create GitHub Language Bar
-      run: |
-        cd language_bar_repo && python generate_bar.py ../base_repo/${{ inputs.readme_path }} ${{ github.repository }}
+      run: >
+        cd language_bar_repo &&
+        python generate_bar.py ../base_repo/${{ inputs.readme_path }} ${{ github.repository }} ${{ inputs.log }} |
+          tee output/log.txt
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.gh_token }}

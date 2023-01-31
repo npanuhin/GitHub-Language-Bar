@@ -43,11 +43,12 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
     ```html
     <!-- Langbar -->
     ```
-3. . . . There is no 3rd step, you are all set! Your bar should appear in a few seconds.<br>
+3. . . . You are all set! Your bar should appear in a few seconds.<br>
 
     The next steps are optional, but I suggest [enabling private repositories](#enable-private-repositories) so that people can see your true language usage across all of your repositories, not just the public ones.
 
-    You can also [customize](#Customize) your new language bar in various ways. If you have any questions, [don't hesitate to ask](https://github.com/npanuhin/GitHub-Language-Bar/issues/new)!
+    You can also [customize](#Customize) your new language bar in various ways. If you have any questions, [don't hesitate to ask!](https://github.com/npanuhin/GitHub-Language-Bar/issues/new)
+
 
 ## Enable private repositories
 
@@ -79,7 +80,7 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
     </details>
 
 
-3. <a id="private_enable_lines_anchor"></a>Add the following parameter to your workflow file `.github/workflows/language_bar.yml`:
+3. <a id="private_enable_lines"></a>Add the following parameter to your workflow file `.github/workflows/language_bar.yml`:
     ```DIFF
         uses: npanuhin/GitHub-Language-Bar@master
     +   with:               # Token is used to fetch private repositories
@@ -113,12 +114,13 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
     </details>
 
 > **Warning**<br>
-> If you enable private repositories, the script will collect and log some information about them. Since your profile repository is almost always public, everyone can see your workflow logs. Here is a list of what others might see and learn about your private repositories:
-> - Total bytes of code in your GitHub repositories (including public ones)
-> - If you use (TODO in URL)
+> If you enable private repositories, the script will collect and log some information about them. Since your profile repository is almost always public, everyone can see your README source and workflow logs (Actions tab). **By default, apart from the bar itself, others cannot learn anything about your private repositories.** However, be careful when using additional settings:
+> - <a id="privacy_log_warning">*If [log is turned on](#log)*: number of bytes per language for each repository is logged
+> - *If you use [`replace`](#replace_setting) or [`hide`](#hide_setting) options* in the `repo:lang` format, be aware that the repository name is visible to everyone. All [settings](#customize) are also logged. However, logs can be deleted from the Actions tab (be aware of scheduled runs)
 
 > **Note**<br>
-> To disable private repositories, just remove [the added lines](#user-content-private_enable_lines_anchor)
+> To disable private repositories, just remove [the added lines](#user-content-private_enable_lines)
+
 
 ## Customize
 
@@ -130,20 +132,20 @@ Customizing GitHub Language Bar is simple — just add the parameter you want af
 
 - **Include collaborative repositories: `include_collaborative = yes/no`[^treating_yes_no] (default/recommended: `no`)**
 
-  [Private mode](#enable-private-repositories) only. Whether to include repositories that you don't own but have access to as a **collaborator**<br>Example: `<!-- Langbar?include_collaborative=yes -->`
+    [Private mode](#enable-private-repositories) only. Whether to include repositories that you don't own but have access to as a **collaborator**<br>Example: `<!-- Langbar?include_collaborative=yes -->`
 
-  > **Note**<br>
-  > Not a **contributor** — **collaborator**! I can not count contributions yet
+    > **Note**<br>
+    > Not a **contributor** — **collaborator**! I can not count contributions yet
 
-- **Replace language: `replace=language1->language1_new,repo2:language2->language2_new`**
+- <a id="replace_setting">**Replace language: `replace=language1->language1_new,repo2:language2->language2_new`**
 
-  Option to replace the desired language with another language in all repositories or only in a specific repository (comma-separated list).<br>
-  Example: `<!-- Langbar?replace=Hack->PHP,npanuhin/MyRepo:Hack->PHP -->`
+    Option to replace the desired language with another language in all repositories or only in a specific repository (comma-separated list).<br>
+    Example: `<!-- Langbar?replace=Hack->PHP,npanuhin/MyRepo:Hack->PHP -->`
 
-- **Hide language: `hide=language1,repo2:language2,language3`**
+- <a id="hide_setting">**Hide language: `hide=language1,repo2:language2,language3`**
 
-  Option to hide the desired language in all repositories or only in a specific repository (comma-separated list).<br>
-  <a id="hide_setting_example"></a>Example: `<!-- Langbar?hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript -->`
+    Option to hide the desired language in all repositories or only in a specific repository (comma-separated list).<br>
+    <a id="hide_setting_example"></a>Example: `<!-- Langbar?hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript -->`
 
 Example of all settings combined:
 ```
@@ -151,7 +153,22 @@ Example of all settings combined:
 ```
 
 > **Note**<br>
-> Settings are applied in the order they appear in the list above. For example, `hide` is applied after `replace`.
+> Settings are applied in the order they appear in this list. For example, `hide` is applied after `replace`
+
+
+## Log
+
+If you want to see the number of bytes of each language in each repository (to get an idea of which setting is best to apply), you can use the `log` parameter.
+[Be mindful of your privacy!](#privacy_log_warning)
+
+```DIFF
+    uses: npanuhin/GitHub-Language-Bar@master
++   with:
++     log: true
+```
+
+After the action completes, the log will be at `{your_repo_url}/blob/language-bar/log.txt`.<br>
+For example: https://github.com/npanuhin/npanuhin/blob/language-bar/log.txt
 
 
 ## Pro tips
@@ -160,16 +177,16 @@ Example of all settings combined:
     `<!-- Langbar?hide=Jupyter Notebook&hide=npanuhin/MyRepo:JavaScript -->`<br>
     is equal to [the previous `hide` example](#hide_setting_example)
 
-2. If you want to add a bar to a file other than `/README.md`, you can specify its path in the `readme_path` variable (without leading slash):
+2. If you want to add a bar to a file other than `/README.md`, you can specify its path in the `readme_path` parameter (without leading slash):
     ```DIFF
         uses: npanuhin/GitHub-Language-Bar@master
     +   with:
-    +     readme_path: path_starts_without_slash/src/my_awesome_dir/README.md
+    +     readme_path: 'path_starts_without_slash/src/my_awesome_dir/README.md'
     ```
 
 ## Contributing
 
-For technical details and TODO list see [contribution guide](.github/CONTRIBUTING.md).
+For technical details and TODO list see [contribution guide](.github/CONTRIBUTING.md)
 
 
 [^anywhere_in_readme]: Actually, it should be on a separate line

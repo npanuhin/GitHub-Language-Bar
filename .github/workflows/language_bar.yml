@@ -16,5 +16,7 @@ jobs:
     steps:
       - name: Create Language Bar
         uses: npanuhin/GitHub-Language-Bar@master
-        # with:               # Token is used to fetch private repositories
+        # with:
         #   gh_token: ${{ secrets.LANG_BAR_PAT }}
+        #   readme_path: 'path_starts_without_slash/src/my_awesome_dir/README.md'
+        #   log: true

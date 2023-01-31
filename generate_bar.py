@@ -13,18 +13,23 @@ from src.svg import generate_bar, beautify as svg_beautify                      
 
 ONLY_PUBLIC = False
 GH_TOKEN = os.environ.get("GH_TOKEN")
-if GH_TOKEN is None:
+if not GH_TOKEN:
     if os.path.isfile(".gh_token"):
+        print("Found GitHub API token in `.gh_token` file")
         with open(".gh_token", encoding="utf-8") as file:
             GH_TOKEN = file.read().strip()
     else:
         ONLY_PUBLIC = True
         print("GitHub API token not specified, running in ONLY_PUBLIC mode")
+else:
+    print("Found GitHub API token in $GH_TOKEN environmental variable")
 
 GITHUB = GitHub(GH_TOKEN, only_public=ONLY_PUBLIC)
 
 PUBLISH_BRANCH = "language-bar"
 PROMOTION_URL = "https://github.com/npanuhin/GitHub-Language-Bar"
+
+LOG = ONLY_PUBLIC
 
 
 ANCHOR_REGEX = re.compile(r"^(.+?)? ?(<!--\s+Langbar(\?.*)?\s+-->)$", re.MULTILINE | re.IGNORECASE)
@@ -36,7 +41,8 @@ def get_my_languages() -> list[Repo]:
 
     print("Fetching repositories...")
     repositories = list(GITHUB.get_my_repos())
-    print(f"Found {len(repositories)} repositories")
+    if LOG:
+        print(f"Found {len(repositories)} repositories")
     # with open("output/repos.json", 'w', encoding="utf-8") as file:
     #     json.dump(repositories, file, ensure_ascii=False, indent=4)
 
@@ -55,16 +61,25 @@ def get_my_languages() -> list[Repo]:
             collaborative=(repository["owner"]["login"] != GITHUB.username),
             languages=languages
         ))
-        if i % 10 == 9:
+        if LOG and i % 10 == 9:
             print(f"{i + 1}/{len(repositories)}")
-    print(f"{len(repositories)}/{len(repositories)}")
+    if LOG:
+        print(f"{len(repositories)}/{len(repositories)}")
 
     # with open("output/repos_data.dump.json", 'w', encoding="utf-8") as file:
     #     json.dump(repos, file, ensure_ascii=False, indent=4, cls=DataclassJSONEncoder)
     return repos
 
 
-def process_readme(readme_path: str = "README.md", readme_repo_name: str = "example/example") -> None:
+def process_readme(
+    readme_path: str = "README.md", readme_repo_name: str = "example/example", enable_log: str | bool = False
+) -> None:
+    global LOG
+    if isinstance(enable_log, str):
+        enable_log = (enable_log != "false")
+    LOG = enable_log or ONLY_PUBLIC
+    print("Log enabled" if LOG else "Log disabled")
+
     GITHUB.username = readme_repo_name.split("/")[0]
     if not os.path.isfile(readme_path):
         exit(f"{readme_path}: file not found")
@@ -113,8 +128,8 @@ def process_readme(readme_path: str = "README.md", readme_repo_name: str = "exam
 
     default_repos = get_my_languages()
 
-    if ONLY_PUBLIC:
-        print("\nLanguage info:")
+    if LOG:
+        print("\n─── Language info (size in bytes) ───")
         for repo in default_repos:
             print(f"Languages for {repo.name}")
             for lang_name, lang in repo.languages.items():
@@ -161,11 +176,11 @@ def process_readme(readme_path: str = "README.md", readme_repo_name: str = "exam
         languages = list(languages.values())
 
         total_bytes = sum(lang.bbytes for lang in languages)
-        print(f"──┤ Total bytes of code: {print_bytes(total_bytes)} ├──")
 
-        for lang in sorted(languages, key=lambda item: -item.bbytes):
-            hidden = " [HIDDEN]" if lang.name in place.hide else ""
-            print(f"{lang.name}: {print_bytes(lang.bbytes)} = {round(lang.bbytes * 100 / total_bytes, 2)}%{hidden}")
+        if LOG:
+            print(f"──┤ Total bytes of code: {print_bytes(total_bytes)} ├──")
+            for lang in sorted(languages, key=lambda item: -item.bbytes):
+                print(f"{lang.name}: {print_bytes(lang.bbytes)} = {round(lang.bbytes * 100 / total_bytes, 2)}%")
 
         # Generate SVG
         svg_bar = generate_bar(languages, total_bytes)
@@ -195,8 +210,8 @@ def process_readme(readme_path: str = "README.md", readme_repo_name: str = "exam
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 2:
-        process_readme(*sys.argv[1:3])
+    if len(sys.argv) == 4:
+        process_readme(*sys.argv[1:])
     else:
-        print("─── Not enough arguments passed, running debug/dev mode ───\n")
-        process_readme("../npanuhin/README.md", "npanuhin/npanuhin")
+        print("─── Not enough or too much arguments passed, running debug/dev mode ───\n")
+        process_readme("../npanuhin/README.md", "npanuhin/npanuhin", True)

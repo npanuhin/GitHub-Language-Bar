@@ -145,9 +145,6 @@ Customizing GitHub Language Bar is simple — just add the parameter you want af
   Option to hide the desired language in all repositories or only in a specific repository (comma-separated list).<br>
   <a id="hide_setting_example"></a>Example: `<!-- Langbar?hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript -->`
 
-- **Exclude repo (TODO)**
-- **Exclude repo.language (TODO)**
-
 Example of all settings combined:
 ```
 <!-- Langbar?include_forks=yes&include_collaborative=yes&hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript -->
@@ -156,8 +153,19 @@ Example of all settings combined:
 > **Note**<br>
 > Settings are applied in the order they appear in the list above. For example, `hide` is applied after `replace`.
 
-**Pro tip**: Individual settings can be used multiple times.<br>
-For example: `<!-- Langbar?hide=Jupyter Notebook&hide=npanuhin/MyRepo:JavaScript -->` is equal to [the previous `hide` example](#hide_setting_example)
+
+## Pro tips
+
+1. Individual settings can be used multiple times. For example:<br>
+    `<!-- Langbar?hide=Jupyter Notebook&hide=npanuhin/MyRepo:JavaScript -->`<br>
+    is equal to [the previous `hide` example](#hide_setting_example)
+
+2. If you want to add a bar to a file other than `/README.md`, you can specify its path in the `readme_path` variable (without leading slash):
+    ```DIFF
+        uses: npanuhin/GitHub-Language-Bar@master
+    +   with:
+    +     readme_path: path_starts_without_slash/src/my_awesome_dir/README.md
+    ```
 
 ## Contributing
 

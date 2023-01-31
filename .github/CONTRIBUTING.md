@@ -22,3 +22,4 @@ We need to retrive file tree (which we can't do if there are too many files or i
 - [x] Affiliation `owner`/`all`
 - [x] ~~Different styles for dark and light mode~~ \[*Won't be implemented yet as I don't see the need, gray works well for both light and dark mode*\]
 - [x] Replace `repo:language`
+- [ ] Add a title

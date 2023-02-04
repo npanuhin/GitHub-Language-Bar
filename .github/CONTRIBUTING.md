@@ -1,5 +1,7 @@
 <h1 align="center">Contributing</h1>
 
+Python version: 3.11 (for linting, e.g. pyupgrade)
+
 #### Code linting
 ```bash
 pip install -U -r ".github/flake8.requirements.txt"
@@ -23,3 +25,4 @@ We need to retrive file tree (which we can't do if there are too many files or i
 - [x] ~~Different styles for dark and light mode~~ \[*Won't be implemented yet as I don't see the need, gray works well for both light and dark mode*\]
 - [x] Replace `repo:language`
 - [ ] Add a title
+- [ ] Replace (modify) with formula: `Langbar?replace= C++ -> 0.9 * ({C++} - 100)`. For example, for competitive programming, when you have a constant amount of code at the beginning of each file

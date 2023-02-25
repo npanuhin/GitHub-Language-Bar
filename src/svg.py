@@ -24,7 +24,7 @@ def get_text_size(text: str, font_size: int, font_path: str) -> tuple[int, int]:
 
 
 def generate_bar(languages: list[Lang], total_bytes: int, margin_top: int = 5) -> str:
-    languages = sorted(languages, key=lambda item: -item.bbytes)
+    languages = sorted(languages, key=lambda item: item.bbytes, reverse=True)
 
     doc, tag, text = Doc().tagtext()
     with tag(

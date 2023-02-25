@@ -39,8 +39,8 @@ class GitHub:
             api_url = f"https://api.github.com/users/{self.username}/repos"
             self.session.headers.pop("Authorization", None)
         else:
-            self.session.headers["Authorization"] = f"Bearer {self.gh_token}"
             api_url = "https://api.github.com/user/repos"
+            self.session.headers["Authorization"] = f"Bearer {self.gh_token}"
 
         page = 0
         while page is not None:
@@ -49,8 +49,9 @@ class GitHub:
                 "per_page": 100,
                 "page": page
             })
-            assert response.status_code == 200, \
+            assert response.status_code == 200, (
                 f"Can't fetch user repositories ({response.status_code}):\n{response.text}"
+            )
 
             if "Link" in response.headers:
                 for item in response.headers["Link"].split(", "):
@@ -71,8 +72,9 @@ class GitHub:
 
     def get_repo_languages(self, repo_name: str) -> dict[str, int]:
         response = self.session.get(f"https://api.github.com/repos/{repo_name}/languages")
-        assert response.status_code == 200, \
+        assert response.status_code == 200, (
             f"Can't fetch repository languages ({response.status_code}):\n{response.text}"
+        )
         return response.json()
 
 

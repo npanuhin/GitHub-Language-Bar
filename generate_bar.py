@@ -8,7 +8,7 @@ import re
 sys.path.append("src")
 from src.utils import Lang, Repo, Place, DataclassJSONEncoder, check_lang_exists, check_repo_format, print_bytes  # noqa
 from src.github import GitHub, LANGUAGE_ALIASES                                                                   # noqa
-from src.svg import generate_bar, beautify as svg_beautify                                                        # noqa
+from src import svg                                                                                               # noqa
 
 
 ONLY_PUBLIC = False
@@ -111,8 +111,9 @@ def process_readme(
                 for item in value.split(','):
                     assert '->' in item, '"->" not found in replace setting'
                     replace_from, replace_to = item.split('->')
-                    assert ':' not in replace_to, \
+                    assert ':' not in replace_to, (
                         'You cannot replace "repo1:language1" with "repo2:language2", only with "language2"'
+                    )
                     if ':' in replace_from:
                         repo, lang = map(str.strip, replace_from.split(':'))
                         replace_from = check_repo_format(repo) + ':' + check_lang_exists(lang)
@@ -179,15 +180,15 @@ def process_readme(
 
         if LOG:
             print(f"──┤ Total bytes of code: {print_bytes(total_bytes)} ├──")
-            for lang in sorted(languages, key=lambda item: -item.bbytes):
+            for lang in sorted(languages, key=lambda item: item.bbytes, reverse=True):
                 print(f"{lang.name}: {print_bytes(lang.bbytes)} = {round(lang.bbytes * 100 / total_bytes, 2)}%")
 
         # Generate SVG
-        svg_bar = generate_bar(languages, total_bytes)
+        svg_bar = svg.generate_bar(languages, total_bytes)
         with open("output/bar.svg", 'w', encoding="utf-8") as file:
             file.write(svg_bar)
         with open("output/bar.readable.svg", 'w', encoding="utf-8") as file:
-            file.write(svg_beautify(svg_bar))
+            file.write(svg.beautify(svg_bar))
 
         result_url = f"https://raw.githubusercontent.com/{readme_repo_name}/language-bar/bar.svg"
 

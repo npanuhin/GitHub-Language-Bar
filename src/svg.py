@@ -9,7 +9,8 @@ SVG_WIDTH, SVG_HEIGHT = 846.4, 30  # 846.4 is the width of README picture on git
 BAR_POS = SvgPos(0, 0, SVG_WIDTH, 8)
 ACCURACY = 3  # How many digits to use after the decimal point
 
-NAME_COLOR = "rgb(139, 148, 158)"
+NAME_COLOR = "rgb(139, 148, 158)"  # GH-Gray
+# NAME_COLOR = "rgb(201, 209, 217)"  # GH-White
 GITHUB_BACKGROUND_COLOR = "rgb(13, 17, 23)"
 
 FONT_SIZE = 13

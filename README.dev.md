@@ -137,12 +137,12 @@ Customizing GitHub Language Bar is simple — just add the parameter you want af
     > **Note**<br>
     > Not a **contributor** — **collaborator**! I can not count contributions yet
 
-- <a id="replace_setting">**Replace language: `replace=language1->language1_new,repo2:language2->language2_new`**
+- <a id="replace_setting">**Replace language: `replace = language1->language1_new,repo2:language2->language2_new`**
 
     Option to replace the desired language with another language in all repositories or only in a specific repository (comma-separated list).<br>
     Example: `<!-- Langbar?replace=Hack->PHP,npanuhin/MyRepo:Hack->PHP -->`
 
-- <a id="hide_setting">**Hide language: `hide=language1,repo2:language2,language3`**
+- <a id="hide_setting">**Hide language: `hide = language1,repo2:language2,language3`**
 
     Option to hide the desired language in all repositories or only in a specific repository (comma-separated list).<br>
     <a id="hide_setting_example"></a>Example: `<!-- Langbar?hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript -->`
@@ -190,4 +190,4 @@ For technical details and TODO list see [contribution guide](.github/CONTRIBUTIN
 
 
 [^anywhere_in_readme]: Actually, it should be on a separate line
-[^treating_yes_no]: `YeS`, `1`, `true`, etc. are treated as `yes`, otherwise as `no`
+[^treating_yes_no]: `YeS`, `1`, `true`, etc. are treated as `yes`/`on`, otherwise as `no`/`off`

@@ -121,9 +121,9 @@ def process_readme(
                     place.replace[replace_from] = replace_to
 
             elif key == "include_forks":
-                place.include_forks = (value.strip().lower() in ("yes", "true", "1"))
+                place.include_forks = (value.strip().lower() in ("yes", "true", "1", "on"))
             elif key == "include_collaborative":
-                place.include_collaborative = (value.strip().lower() in ("yes", "true", "1"))
+                place.include_collaborative = (value.strip().lower() in ("yes", "true", "1", "on"))
             else:
                 print(f"Undefined key: {key}")
 

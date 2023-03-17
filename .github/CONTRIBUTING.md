@@ -27,3 +27,4 @@ We need to retrive file tree (which we can't do if there are too many files or i
 - [ ] Add a title
 - [ ] Replace (modify) with formula: `Langbar?replace= C++ -> 0.9 * ({C++} - 100)`. For example, for competitive programming, when you have a constant amount of code at the beginning of each file
 - [ ] Option to remove promotion URL (possibly if the user has given the project a star xd)
+- [ ] Changeable text color (white/grey/etc) + light/dark mode themes

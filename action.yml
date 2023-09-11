@@ -20,12 +20,12 @@ runs:
   using: composite
   steps:
     - name: Checkout current repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: base_repo
 
     - name: Checkout Language Bar repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: npanuhin/GitHub-Language-Bar
         path: language_bar_repo

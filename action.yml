@@ -67,7 +67,7 @@ runs:
     #   shell: bash
 
     - name: Push changes made by script
-      uses: stefanzweifel/git-auto-commit-action@v4
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
         repository: base_repo
         commit_message: 'Language Bar Update'

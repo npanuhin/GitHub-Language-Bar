@@ -5,9 +5,9 @@ from utils import Lang, SvgPos    # noqa
 from github import GITHUB_COLORS  # noqa
 
 
-SVG_WIDTH, SVG_HEIGHT = 846.4, 30  # 846.4 is the width of README picture on github profile page
+SVG_WIDTH, SVG_HEIGHT = 846.4, 30  # 846.4 is the width of the README block on GitHub profile page
 BAR_POS = SvgPos(0, 0, SVG_WIDTH, 8)
-ACCURACY = 3  # How many digits to use after the decimal point
+ACCURACY = 3  # How many digits to use after the decimal point for ratio calculations
 
 NAME_COLOR = "rgb(139, 148, 158)"  # GH-Gray
 # NAME_COLOR = "rgb(201, 209, 217)"  # GH-White

@@ -1,16 +1,18 @@
 <h1 align="center">Contributing</h1>
 
-Python version: 3.11 (for linting, e.g. pyupgrade)
+Python version: 3.12 (for linting, e.g. flake8)
 
 #### Code linting
 ```bash
-pip install -U -r ".github/flake8.requirements.txt"
+pip install -r ".github/flake8.requirements.txt"
 flake8 --show-source --statistics
 
+```
+<!-- ```bash
 # To install pre-commit hook:
 pip install -U pre-commit
 pre-commit install --config ".github/.pre-commit-config.yaml"
-```
+``` -->
 
 #### Access token
 Generate and place your token in `/.gh_token` file (~~or use the `GH_TOKEN` environmental variable~~)

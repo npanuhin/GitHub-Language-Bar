@@ -20,18 +20,18 @@ runs:
   using: composite
   steps:
     - name: Checkout current repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: base_repo
 
     - name: Checkout Language Bar repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: npanuhin/GitHub-Language-Bar
         path: language_bar_repo
 
     - name: Install Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.11
         cache: pip
@@ -67,7 +67,7 @@ runs:
     #   shell: bash
 
     - name: Push changes made by script
-      uses: stefanzweifel/git-auto-commit-action@v4
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
         repository: base_repo
         commit_message: 'Language Bar Update'

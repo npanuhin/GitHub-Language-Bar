@@ -15,7 +15,7 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
 
 ## Wanna add one to you profile?
 
-> Just two steps, two minutes! ⏱
+<!-- > Just two steps, two minutes! ⏱ -->
 
 1. Create a workflow file named `language_bar.yml` in your repository under `.github/workflows` folder and paste the following content inside. [Here is an example](https://github.com/npanuhin/GitHub-Language-Bar/blob/master/.github/workflows/language_bar.yml)
     ```YAML
@@ -52,10 +52,11 @@ It's worth mentioning [github-readme-stats](https://github.com/anuraghazra/githu
 
 ## Enable private repositories
 
-1. Generate a new **repo**-scoped personal access token:
-    - Go to https://github.com/settings/tokens/new
+1. Generate a new fine-grained personal access token with access to all your current and future repositories and the `contents` scope:
+    - Go to https://github.com/settings/personal-access-tokens/new
     - Name the token as you like, e.g. `Language-Bar-token`
-    - Set `Expiration` date to `No Expiration`
+    - Set the maximum `Expiration` date allowed by GitHub<sup>Once the token expires, you will need to regenerate it<a href="#user-content-fn-fine_grained_token">awd</a></sup>
+
     - Click on the first checkbox named `repo`
     - `Generate token` down below
     - Finally, copy your new token to your clipboard
@@ -147,9 +148,14 @@ Customizing GitHub Language Bar is simple — just add the parameter you want af
     Option to hide the desired language in all repositories or only in a specific repository (comma-separated list).<br>
     <a id="hide_setting_example"></a>Example: `<!-- Langbar?hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript -->`
 
+- <a id="hide_setting">**Image link: `link = {some url}`[^treating_yes_no] (default: `on`)**
+
+    By defaultOption to hide the desired language in all repositories or only in a specific repository (comma-separated list).<br>
+    <a id="hide_setting_example"></a>Example: `<!-- Langbar?hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript -->`
+
 Example of all settings combined:
 ```
-<!-- Langbar?include_forks=yes&include_collaborative=yes&hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript -->
+<!-- Langbar?include_forks=yes&include_collaborative=yes&hide=Jupyter Notebook,npanuhin/MyRepo:JavaScript& -->
 ```
 
 > **Note**<br>
@@ -191,3 +197,4 @@ For technical details and TODO list see [contribution guide](.github/CONTRIBUTIN
 
 [^anywhere_in_readme]: Actually, it should be on a separate line
 [^treating_yes_no]: `YeS`, `1`, `true`, etc. are treated as `yes`/`on`, otherwise as `no`/`off`
+[^fine_grained_token]: For some reason, GitHub [has made it impossible](https://github.blog/2022-10-18-introducing-fine-grained-personal-access-tokens-for-github/#fine-grained-personal-access-tokens-in-action) to create applications like GitHub Language Bar that need all-time access to all repositories — either you can't access repositories in organizations that have disabled classic tokens, or you need to reissue a fine-grained token every year
